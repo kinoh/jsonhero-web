@@ -1,6 +1,6 @@
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import React, { ComponentPropsWithoutRef } from "react";
-import { omit } from "lodash-es";
+import { omit } from "~/utilities/collections";
 
 export const DialogContent = React.forwardRef<
   React.ElementRef<typeof DialogPrimitive.Content>,

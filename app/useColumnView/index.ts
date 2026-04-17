@@ -1,4 +1,4 @@
-import { omit } from "lodash-es";
+import { omit } from "~/utilities/collections";
 import React, {
   ReactNode,
   Reducer,

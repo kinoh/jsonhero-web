@@ -1,5 +1,5 @@
 import { JSONHeroPath } from "@jsonhero/path";
-import { pick } from "lodash-es";
+import { pick } from "~/utilities/collections";
 import React, { useEffect, useRef } from "react";
 import { createContext, ReactNode, useContext } from "react";
 import invariant from "tiny-invariant";

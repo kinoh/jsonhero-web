@@ -1,4 +1,4 @@
-import pick from "lodash-es/pick";
+import { pick } from "~/utilities/collections";
 import React, {
   useReducer,
   Reducer,

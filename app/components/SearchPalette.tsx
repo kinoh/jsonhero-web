@@ -20,7 +20,7 @@ import classnames from "~/utilities/classnames";
 import { iconForValue } from "~/utilities/icons";
 import { useRef, useCallback } from "react";
 import { useVirtual } from "react-virtual";
-import { truncate } from "lodash-es";
+import { truncate } from "~/utilities/collections";
 import { JSONHeroPath } from "@jsonhero/path";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useJson } from "~/hooks/useJson";

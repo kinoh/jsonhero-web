@@ -1,5 +1,5 @@
 import { Array, Dict } from "@swan-io/boxed";
-import { groupBy, uniq } from "lodash-es";
+import { groupBy, uniq } from "~/utilities/collections";
 
 type StringSlice = {
   isMatch: boolean;
@@ -384,7 +384,7 @@ export function getComponentSlices(
       (slice) => slice.componentIndex
     );
 
-    const sortedByLongestMatch = Dict.entries(groupByComponentIndex).sort(
+    const sortedByLongestMatch = Object.entries(groupByComponentIndex).sort(
       ([, componentSlicesA], [, componentSlicesB]) => {
         if (
           calculateLongestMatch(componentSlicesA) >
