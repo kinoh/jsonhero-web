@@ -29,7 +29,7 @@ export default function Index() {
   const { toastMessage } = useLoaderData<LoaderData>();
 
   return (
-    <div className="overflow-x-hidden bg-slate-950">
+    <div className="overflow-x-hidden">
       {toastMessage && (
         <ToastPopover
           message={toastMessage.message}
@@ -40,10 +40,7 @@ export default function Index() {
       )}
 
       <HomeHeader fixed={true} />
-      <main
-        className="min-h-screen px-4 pt-24 text-white"
-        style={{ backgroundColor: "#020617" }}
-      >
+      <main className="min-h-screen bg-slate-900 px-4 pt-24 text-white">
         <div className="mx-auto flex max-w-3xl flex-col gap-6 rounded-xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
           <div className="space-y-2">
             <Title className="text-3xl text-slate-100">
