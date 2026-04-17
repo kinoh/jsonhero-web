@@ -2,15 +2,7 @@ import { DiscordIconTransparent } from "../Icons/DiscordIconTransparent";
 import { EmailIconTransparent } from "../Icons/EmailIconTransparent";
 import { TwitterIcon } from "../Icons/TwitterIcon";
 import { Logo } from "../Icons/Logo";
-import { NewDocument } from "../NewDocument";
 import { GithubStar } from "../UI/GithubStar";
-import {
-  Popover,
-  PopoverArrow,
-  PopoverContent,
-  PopoverTrigger,
-} from "../UI/Popover";
-import TriggerDevLogoImage from "~/assets/images/trigger-dev-logo.png";
 import { LogoTriggerdotdev } from "../Icons/LogoTriggerdotdev";
 
 export function HomeHeader({ fixed }: { fixed?: boolean }) {
@@ -29,21 +21,6 @@ export function HomeHeader({ fixed }: { fixed?: boolean }) {
           <LogoTriggerdotdev className="pt-0.5 w-16 sm:w-24 opacity-80 hover:opacity-100 transition duration-300" />
         </div>
         <ol className="flex items-center gap-2 sm:pr-4">
-          <Popover>
-            <PopoverTrigger>
-              <button className=" bg-lime-400 text-slate-900 text-lg font-bold px-2 py-0.5 rounded uppercase whitespace-nowrap cursor-pointer opacity-90 hover:opacity-100 transition">
-                Try now
-              </button>
-            </PopoverTrigger>
-            <PopoverContent side="bottom" sideOffset={30}>
-              <NewDocument />
-              <PopoverArrow
-                className="fill-current text-indigo-700"
-                offset={20}
-              />
-            </PopoverContent>
-          </Popover>
-
           <li className="hover:cursor-pointer hidden sm:block">
             <GithubStar />
           </li>
