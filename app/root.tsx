@@ -89,7 +89,7 @@ function App() {
         <Links />
         <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
       </head>
-      <body className="overscroll-none">
+      <body className="overscroll-none bg-slate-950">
         <Outlet />
         <ScrollRestoration />
         <Scripts />
