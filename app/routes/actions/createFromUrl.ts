@@ -1,5 +1,10 @@
-import { redirect } from "remix";
-import type { ActionFunction, LoaderFunction } from "remix";
+import { redirect } from "@remix-run/cloudflare";
+import type {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunction,
+  LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { createFromUrl, createFromUrlOrRawJson } from "~/jsonDoc.server";
 import { sendEvent } from "~/graphJSON.server";
@@ -13,7 +18,10 @@ type CreateFromUrlError = {
   jsonUrl?: boolean;
 };
 
-export let action: ActionFunction = async ({ request, context }) => {
+export let action: ActionFunction = async ({
+  request,
+  context,
+}: ActionFunctionArgs) => {
   const formData = await request.formData();
   const toastCookie = await getSession(request.headers.get("cookie"));
   const jsonUrl = formData.get("jsonUrl");
@@ -69,7 +77,10 @@ export let action: ActionFunction = async ({ request, context }) => {
   }
 };
 
-export let loader: LoaderFunction = async ({ request, context }) => {
+export let loader: LoaderFunction = async ({
+  request,
+  context,
+}: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const jsonUrl = url.searchParams.get("jsonUrl");
 

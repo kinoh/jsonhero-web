@@ -1,13 +1,19 @@
 import {
-  ActionFunction,
-  LoaderFunction,
-  MetaFunction,
   Outlet,
-  redirect, ThrownResponse, useCatch,
   useLoaderData,
   useLocation,
   useParams,
-} from "remix";
+  useRouteError,
+  isRouteErrorResponse,
+} from "@remix-run/react";
+import { redirect } from "@remix-run/cloudflare";
+import type {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunction,
+  LoaderFunctionArgs,
+  MetaFunction,
+} from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { deleteDocument, getDocument, JSONDocument } from "~/jsonDoc.server";
 import { JsonDocProvider } from "~/hooks/useJsonDoc";
@@ -36,9 +42,12 @@ import {
   setErrorMessage,
   setSuccessMessage,
 } from "~/services/toast.server";
-import { getRandomUserAgent } from '~/utilities/getRandomUserAgent'
+import { getRandomUserAgent } from "~/utilities/getRandomUserAgent";
 
-export const loader: LoaderFunction = async ({ params, request }) => {
+export const loader: LoaderFunction = async ({
+  params,
+  request,
+}: LoaderFunctionArgs) => {
   invariant(params.id, "expected params.id");
 
   const doc = await getDocument(params.id);
@@ -89,7 +98,10 @@ export const loader: LoaderFunction = async ({ params, request }) => {
   }
 };
 
-export const action: ActionFunction = async ({ request, params }) => {
+export const action: ActionFunction = async ({
+  request,
+  params,
+}: ActionFunctionArgs) => {
   // Return if the request is not a DELETE
   if (request.method !== "DELETE") {
     return;
@@ -157,22 +169,18 @@ type LoaderData = {
   minimal?: boolean;
 };
 
-export const meta: MetaFunction = ({
-  data,
-}: {
-  data: LoaderData | undefined;
-}) => {
+export const meta: MetaFunction<typeof loader> = ({ data }: { data: LoaderData | undefined }) => {
   let title = "JSON Hero";
 
   if (data?.doc?.title) {
     title += ` - ${data.doc.title}`;
   }
 
-  return {
-    title,
-    "og:title": title,
-    robots: "noindex,nofollow",
-  };
+  return [
+    { title },
+    { property: "og:title", content: title },
+    { name: "robots", content: "noindex,nofollow" },
+  ];
 };
 
 export default function JsonDocumentRoute() {
@@ -247,10 +255,22 @@ export default function JsonDocumentRoute() {
   );
 }
 
-export function CatchBoundary() {
-  const error = useCatch();
+export function ErrorBoundary() {
+  const error = useRouteError();
   const params = useParams();
-  console.log("error", error)
+  console.error("document route error", error);
+  const status = isRouteErrorResponse(error) ? error.status : 500;
+  const message = isRouteErrorResponse(error)
+    ? error.data || (
+        error.status === 404
+          ? (
+              <>
+                We couldn't find the page <b>'https://jsonhero.io/j/{params.id}'</b>
+              </>
+            )
+          : "Unknown error occurred."
+      )
+    : "Unknown error occurred.";
 
   return (
     <div className="flex items-center justify-center w-screen h-screen bg-[rgb(56,52,139)]">
@@ -260,20 +280,14 @@ export function CatchBoundary() {
             <Logo />
           </div>
           <PageNotFoundTitle className="text-center leading-tight">
-            {error.status}
+            {status}
           </PageNotFoundTitle>
         </div>
         <div className="text-center leading-snug text-white">
           <ExtraLargeTitle className="text-slate-200 mb-8">
             <b>Sorry</b>! Something went wrong...
           </ExtraLargeTitle>
-          <SmallSubtitle className="text-slate-200 mb-8">
-            {error.data || (
-              error.status === 404
-                ? <>We couldn't find the page <b>'https://jsonhero.io/j/{params.id}'</b></>
-                : "Unknown error occurred."
-            )}
-          </SmallSubtitle>
+          <SmallSubtitle className="text-slate-200 mb-8">{message}</SmallSubtitle>
           <a
             href="/"
             className="mx-auto w-24 bg-lime-500 text-slate-900 text-lg font-bold px-5 py-1 rounded-sm uppercase whitespace-nowrap cursor-pointer opacity-90 hover:opacity-100 transition"

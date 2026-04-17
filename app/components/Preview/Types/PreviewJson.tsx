@@ -4,9 +4,9 @@ import { CopyTextButton } from "~/components/CopyTextButton";
 import { OpenInNewWindow } from "~/components/OpenInWindow";
 import { Body } from "~/components/Primitives/Body";
 import { PreviewBox } from "../PreviewBox";
-import { PreviewJson } from "./preview.types";
+import type { PreviewJson as PreviewJsonInfo } from "./preview.types";
 
-export function PreviewJson({ preview }: { preview: PreviewJson }) {
+export function PreviewJson({ preview }: { preview: PreviewJsonInfo }) {
   const [hovering, setHovering] = useState(false);
   const jsonHeroUrl = new URL(
     `/actions/createFromUrl?jsonUrl=${encodeURIComponent(preview.url)}`,

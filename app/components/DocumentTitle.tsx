@@ -1,6 +1,6 @@
 import { PencilAltIcon } from "@heroicons/react/outline";
 import { useEffect, useRef, useState } from "react";
-import { useFetcher } from "remix";
+import { useFetcher } from "@remix-run/react";
 import { match } from "ts-pattern";
 import { useJsonDoc } from "~/hooks/useJsonDoc";
 
@@ -11,7 +11,12 @@ export function DocumentTitle() {
   const ref = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
-    if (updateDoc.type === "done" && updateDoc.data.title) {
+    if (
+      updateDoc.state === "idle" &&
+      updateDoc.data &&
+      typeof updateDoc.data === "object" &&
+      "title" in updateDoc.data
+    ) {
       ref.current?.blur();
     }
   }, [updateDoc]);

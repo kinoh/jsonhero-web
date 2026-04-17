@@ -7,9 +7,9 @@ import {
   getSession,
   ToastMessage,
 } from "../services/toast.server";
-import { json, useLoaderData } from "remix";
+import { useLoaderData } from "@remix-run/react";
+import { json } from "@remix-run/cloudflare";
 import ToastPopover from "../components/UI/ToastPopover";
-import { HomeTriggerDevBanner } from "~/components/Home/HomeTriggerDevBanner";
 
 type LoaderData = { toastMessage?: ToastMessage };
 

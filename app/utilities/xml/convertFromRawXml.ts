@@ -29,7 +29,7 @@ const serializeXml = (
   }
 
   const children = Array.from(node.childNodes).map((child) =>
-    serializeXml(child)
+    serializeXml(child as ChildNode & { attributes?: NamedNodeMap })
   );
 
   const attributes =
@@ -88,14 +88,10 @@ export default function convertFromRawXml(xmlString: string): string {
 
   // Read comment in isXML.ts for why we need to handle error this way
   const xmlDoc = new DOMParser({
-    errorHandler: {
-      warning: () => {},
-      error: () => {
+    onError(level) {
+      if (level !== "warning") {
         throw new Error("Invalid XML");
-      },
-      fatalError: () => {
-        throw new Error("Invalid XML");
-      },
+      }
     },
   }).parseFromString(cleanXmlString, "application/xml");
 
@@ -105,7 +101,7 @@ export default function convertFromRawXml(xmlString: string): string {
 
   const nodes = Array.from(xmlDoc.childNodes);
   const serialized = nodes.map((node) => {
-    return serializeXml(node);
+    return serializeXml(node as unknown as ChildNode & { attributes?: NamedNodeMap });
   });
 
   return JSON.stringify(serialized);

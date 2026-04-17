@@ -25,7 +25,7 @@ export async function getStarCount(): Promise<number | undefined> {
       return;
     }
 
-    const data = await response.json();
+    const data = (await response.json()) as { stargazers_count?: number };
     return data.stargazers_count;
   } catch (error) {
     console.error(error);

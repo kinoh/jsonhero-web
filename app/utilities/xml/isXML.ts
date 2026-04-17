@@ -10,14 +10,10 @@ export default function isXML(possibleXml: string): boolean {
   // https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#error_handling
 
   const xmlDoc = new DOMParser({
-    errorHandler: {
-      warning: () => {},
-      error: () => {
+    onError(level) {
+      if (level !== "warning") {
         isValid = false;
-      },
-      fatalError: () => {
-        isValid = false;
-      },
+      }
     },
   }).parseFromString(possibleXml, "application/xml");
 

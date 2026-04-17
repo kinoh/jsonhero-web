@@ -1,9 +1,14 @@
-import { ActionFunction, json } from "remix";
+import { json } from "@remix-run/cloudflare";
+import type { ActionFunction, ActionFunctionArgs } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { sendEvent } from "~/graphJSON.server";
 import { updateDocument } from "~/jsonDoc.server";
 
-export const action: ActionFunction = async ({ params, request, context }) => {
+export const action: ActionFunction = async ({
+  params,
+  request,
+  context,
+}: ActionFunctionArgs) => {
   invariant(params.id, "expected params.id");
 
   const title = (await request.formData()).get("title");

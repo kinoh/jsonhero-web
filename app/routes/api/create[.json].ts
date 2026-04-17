@@ -1,9 +1,17 @@
-import { ActionFunction, json, LoaderFunction } from "remix";
+import { json } from "@remix-run/cloudflare";
+import type {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunction,
+  LoaderFunctionArgs,
+} from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { sendEvent } from "~/graphJSON.server";
 import { createFromRawJson, CreateJsonOptions } from "~/jsonDoc.server";
 
-export const loader: LoaderFunction = async ({ request }) => {
+export const loader: LoaderFunction = async ({
+  request,
+}: LoaderFunctionArgs) => {
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -17,10 +25,18 @@ export const loader: LoaderFunction = async ({ request }) => {
   }
 };
 
-export const action: ActionFunction = async ({ request, context }) => {
+export const action: ActionFunction = async ({
+  request,
+  context,
+}: ActionFunctionArgs) => {
   const url = new URL(request.url);
-
-  const { title, content, ttl, readOnly } = await request.json();
+  const body = (await request.json()) as {
+    title?: unknown;
+    content?: unknown;
+    ttl?: unknown;
+    readOnly?: unknown;
+  };
+  const { title, content, ttl, readOnly } = body;
 
   if (!title || !content) {
     return json({ message: "Missing title or content" }, 400);

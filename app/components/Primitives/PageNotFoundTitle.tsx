@@ -1,6 +1,6 @@
-import { FunctionComponent } from "react";
+import type { FunctionComponent, PropsWithChildren } from "react";
 
-export const PageNotFoundTitle: FunctionComponent<{ className?: string }> = ({
+export const PageNotFoundTitle: FunctionComponent<PropsWithChildren<{ className?: string }>> = ({
   className,
   children,
 }) => {

@@ -56,7 +56,7 @@ export function HomeInfoBoxSection() {
 function HomeInfoBoxSectionContent() {
   const [index, setIndex] = useState(0);
   const api = useJsonColumnViewAPI();
-  const interval = useRef<NodeJS.Timer | null>(null);
+  const interval = useRef<ReturnType<typeof setInterval> | null>(null);
 
   useEffect(() => {
     const selectedPath = infoBoxData[index].highlight;

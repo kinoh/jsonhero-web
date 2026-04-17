@@ -1,6 +1,6 @@
-import { FunctionComponent } from "react";
+import type { FunctionComponent, PropsWithChildren } from "react";
 
-export const LargeMono: FunctionComponent<{ className?: string }> = ({
+export const LargeMono: FunctionComponent<PropsWithChildren<{ className?: string }>> = ({
   className,
   children,
 }) => {

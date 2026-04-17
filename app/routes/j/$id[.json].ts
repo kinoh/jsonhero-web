@@ -1,8 +1,12 @@
-import { json, LoaderFunction } from "remix";
+import { json } from "@remix-run/cloudflare";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { getDocument } from "~/jsonDoc.server";
 
-export const loader: LoaderFunction = async ({ params, request }) => {
+export const loader: LoaderFunction = async ({
+  params,
+  request,
+}: LoaderFunctionArgs) => {
   invariant(params.id, "expected params.id");
 
   const doc = await getDocument(params.id);

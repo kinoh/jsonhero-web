@@ -1,10 +1,17 @@
-import { json, redirect } from "remix";
-import type { ActionFunction, LoaderFunction } from "remix";
+import { json, redirect } from "@remix-run/cloudflare";
+import type {
+  ActionFunction,
+  ActionFunctionArgs,
+  LoaderFunction,
+} from "@remix-run/cloudflare";
 import { getThemeSession } from "~/theme.server";
 import { isTheme } from "~/components/ThemeProvider";
 import { sendEvent } from "~/graphJSON.server";
 
-export const action: ActionFunction = async ({ request, context }) => {
+export const action: ActionFunction = async ({
+  request,
+  context,
+}: ActionFunctionArgs) => {
   const themeSession = await getThemeSession(request);
   const requestText = await request.text();
   const form = new URLSearchParams(requestText);

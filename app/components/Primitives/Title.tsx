@@ -1,6 +1,6 @@
-import { FunctionComponent } from "react";
+import type { FunctionComponent, PropsWithChildren } from "react";
 
-export const Title: FunctionComponent<{ className?: string }> = ({
+export const Title: FunctionComponent<PropsWithChildren<{ className?: string }>> = ({
   className,
   children,
 }) => {

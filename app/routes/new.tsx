@@ -1,4 +1,5 @@
-import { json, LoaderFunction, redirect } from "remix";
+import { json, redirect } from "@remix-run/cloudflare";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { sendEvent } from "~/graphJSON.server";
 import {
@@ -7,7 +8,10 @@ import {
   CreateJsonOptions,
 } from "~/jsonDoc.server";
 
-export let loader: LoaderFunction = async ({ request, context }) => {
+export let loader: LoaderFunction = async ({
+  request,
+  context,
+}: LoaderFunctionArgs) => {
   const url = new URL(request.url);
   const jsonUrl = url.searchParams.get("url");
   const base64EncodedJson = url.searchParams.get("j");

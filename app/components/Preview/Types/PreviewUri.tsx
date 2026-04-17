@@ -1,6 +1,6 @@
 import { JSONStringType } from "@jsonhero/json-infer-types/lib/@types";
 import { useEffect } from "react";
-import { useFetcher } from "remix";
+import { useFetcher } from "@remix-run/react";
 import { Body } from "~/components/Primitives/Body";
 import { useLoadWhenOnline } from "~/hooks/useLoadWhenOnline";
 import { PreviewBox } from "../PreviewBox";
@@ -21,7 +21,7 @@ export function PreviewUri(props: PreviewUriProps) {
 
   return (
     <div>
-      {previewFetcher.type === "done" ? (
+      {previewFetcher.state === "idle" && previewFetcher.data ? (
         <>
           {typeof previewFetcher.data == "string" ? (
             <PreviewBox>

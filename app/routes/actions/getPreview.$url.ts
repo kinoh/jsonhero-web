@@ -1,8 +1,8 @@
-import { LoaderFunction } from "remix";
+import type { LoaderFunction, LoaderFunctionArgs } from "@remix-run/cloudflare";
 import invariant from "tiny-invariant";
 import { getUriPreview } from "~/services/uriPreview.server";
 
-export const loader: LoaderFunction = async ({ params }) => {
+export const loader: LoaderFunction = async ({ params }: LoaderFunctionArgs) => {
   try {
     invariant(params.url, "expected params.url");
 
