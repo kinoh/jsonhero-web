@@ -29,7 +29,7 @@ export default function Index() {
   const { toastMessage } = useLoaderData<LoaderData>();
 
   return (
-    <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden bg-slate-950">
       {toastMessage && (
         <ToastPopover
           message={toastMessage.message}
