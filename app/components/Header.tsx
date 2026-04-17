@@ -39,11 +39,12 @@ export function Header() {
               ) && e.preventDefault()
             }
           >
-            <button type="submit">
-              <button className="flex items-center justify-center py-1 bg-slate-200 text-slate-800 bg-opacity-80 text-base font-bold px-2 rounded uppercase hover:cursor-pointer hover:bg-opacity-100 transition">
-                <TrashIcon className="w-4 h-4 mr-0.5"></TrashIcon>
-                Delete
-              </button>
+            <button
+              type="submit"
+              className="flex items-center justify-center py-1 bg-slate-200 text-slate-800 bg-opacity-80 text-base font-bold px-2 rounded uppercase hover:cursor-pointer hover:bg-opacity-100 transition"
+            >
+              <TrashIcon className="w-4 h-4 mr-0.5"></TrashIcon>
+              Delete
             </button>
           </Form>
         )}

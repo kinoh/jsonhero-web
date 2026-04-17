@@ -1,6 +1,5 @@
 import {
   Links,
-  LiveReload,
   LoaderFunction,
   Meta,
   Outlet,
@@ -94,7 +93,6 @@ function App() {
         <Outlet />
         <ScrollRestoration />
         <Scripts />
-        {process.env.NODE_ENV === "development" && <LiveReload />}
       </body>
     </html>
   );
