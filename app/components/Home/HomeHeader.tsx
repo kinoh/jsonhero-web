@@ -18,7 +18,7 @@ export function HomeHeader({ fixed }: { fixed?: boolean }) {
     <header
       className={`${
         fixed ? "fixed" : ""
-      } z-20 flex h-12 justify-center bg-indigo-700 flex-col`}
+      } z-20 flex h-12 justify-center bg-indigo-900 flex-col`}
     >
       <div className="flex items-center justify-between w-screen px-4">
         <div className="flex gap-1 sm:gap-1.5 h-8 justify-center items-center">
