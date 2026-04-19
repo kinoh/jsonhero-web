@@ -61,7 +61,7 @@
     "react-dropzone": "^11.4.2",
     "react-hotkeys-hook": "^3.4.4",
     "react-use-intercom": "^2.0.0",
-    "react-virtual": "^2.10.4",
+    "@tanstack/react-virtual": "^3.13.24",
     "react-router": "^7.14.1",
     "tailwindcss-radix": "^1.6.0",
     "tiny-invariant": "^1.2.0",
