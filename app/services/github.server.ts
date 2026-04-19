@@ -1,4 +1,11 @@
 export async function getStarCount(): Promise<number | undefined> {
+  if (
+    process.env.NODE_ENV !== "production" ||
+    process.env.JSONHERO_DISABLE_GITHUB_FETCH === "1"
+  ) {
+    return;
+  }
+
   try {
     const response = await fetch(
       `https://api.github.com/repos/triggerdotdev/jsonhero-web`,

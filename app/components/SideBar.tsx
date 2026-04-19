@@ -14,7 +14,11 @@ export function SideBar() {
   return (
     <div className="side-bar flex flex-col align-center justify-between h-full p-1 bg-slate-200 transition dark:bg-slate-800">
       <ol className="relative">
-        <SidebarLink to={`/j/${doc.id}`} hotKey="option+1,alt+1">
+        <SidebarLink
+          to={`/j/${doc.id}`}
+          hotKey="option+1,alt+1"
+          label="Column view"
+        >
           <ToolTip arrow="left">
             <Body>Column view</Body>
             <ShortcutIcon className="w-[26px] h-[26px] ml-1 text-slate-700 bg-slate-200 dark:text-slate-300 dark:bg-slate-800">
@@ -26,7 +30,11 @@ export function SideBar() {
           </ToolTip>
           <TemplateIcon className="p-2 w-full h-full" />
         </SidebarLink>
-        <SidebarLink to={`/j/${doc.id}/editor`} hotKey="option+2,alt+2">
+        <SidebarLink
+          to={`/j/${doc.id}/editor`}
+          hotKey="option+2,alt+2"
+          label="JSON view"
+        >
           <ToolTip arrow="left">
             <Body>JSON view</Body>
             <ShortcutIcon className="w-[26px] h-[26px] ml-1 text-slate-700 bg-slate-200 dark:text-slate-300 dark:bg-slate-800">
@@ -38,7 +46,11 @@ export function SideBar() {
           </ToolTip>
           <CodeIcon className="p-2 w-full h-full" />
         </SidebarLink>
-        <SidebarLink to={`/j/${doc.id}/tree`} hotKey="option+3,alt+3">
+        <SidebarLink
+          to={`/j/${doc.id}/tree`}
+          hotKey="option+3,alt+3"
+          label="Tree view"
+        >
           <ToolTip arrow="left">
             <Body>Tree view</Body>
             <ShortcutIcon className="w-[26px] h-[26px] ml-1 text-slate-700 bg-slate-200 dark:text-slate-300 dark:bg-slate-800">
@@ -52,8 +64,8 @@ export function SideBar() {
         </SidebarLink>
       </ol>
       <ol>
-        <SidebarLink>
-          <a href={`/j/${doc.id}.json`} target="_blank">
+        <SidebarLink label="Download JSON">
+          <a href={`/j/${doc.id}.json`} target="_blank" aria-label="Download JSON">
             <ToolTip arrow="left">
               <Body>Download</Body>
             </ToolTip>
@@ -69,10 +81,12 @@ function SidebarLink({
   children,
   to,
   hotKey,
+  label,
 }: {
   children: React.ReactNode;
   to?: string;
   hotKey?: string;
+  label?: string;
 }) {
   const location = useLocation();
 
@@ -113,10 +127,16 @@ function SidebarLink({
     : "relative w-10 h-10 mb-1 text-slate-700 hover:bg-slate-300 rounded-sm cursor:pointer transition dark:text-white dark:hover:bg-slate-700";
 
   return !!to ? (
-    <Link to={href} prefetch={isActive ? "none" : "render"}>
+    <Link
+      to={href}
+      prefetch={isActive ? "none" : "render"}
+      aria-label={label}
+    >
       <li className={classes}>{children}</li>
     </Link>
   ) : (
-    <li className={classes}>{children}</li>
+    <li className={classes} aria-label={label}>
+      {children}
+    </li>
   );
 }
