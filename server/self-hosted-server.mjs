@@ -102,6 +102,47 @@ function createFetchRequest(request, response) {
   return new Request(url, init);
 }
 
+function getClientAddress(nodeRequest) {
+  const forwardedFor = nodeRequest.headers["x-forwarded-for"];
+
+  if (typeof forwardedFor === "string") {
+    return forwardedFor.split(",")[0].trim();
+  }
+
+  if (Array.isArray(forwardedFor) && forwardedFor.length > 0) {
+    return forwardedFor[0].split(",")[0].trim();
+  }
+
+  return nodeRequest.socket.remoteAddress ?? "-";
+}
+
+function attachAccessLog(nodeRequest, nodeResponse) {
+  const startedAt = process.hrtime.bigint();
+  let isLogged = false;
+
+  const logRequest = (eventName) => {
+    if (isLogged) {
+      return;
+    }
+
+    isLogged = true;
+
+    const durationMs = Number(process.hrtime.bigint() - startedAt) / 1_000_000;
+    const contentLength = nodeResponse.getHeader("content-length") ?? "-";
+    const statusCode = nodeResponse.statusCode || 0;
+    const method = nodeRequest.method ?? "UNKNOWN";
+    const target = nodeRequest.url ?? "/";
+    const clientAddress = getClientAddress(nodeRequest);
+
+    console.log(
+      `${clientAddress} - "${method} ${target}" ${statusCode} ${contentLength} ${durationMs.toFixed(1)}ms ${eventName}`
+    );
+  };
+
+  nodeResponse.on("finish", () => logRequest("finish"));
+  nodeResponse.on("close", () => logRequest("close"));
+}
+
 async function sendFetchResponse(response, nodeResponse) {
   nodeResponse.statusCode = response.status;
 
@@ -192,6 +233,8 @@ async function maybeServeStaticAsset(nodeRequest, nodeResponse) {
 }
 
 const server = createServer(async (nodeRequest, nodeResponse) => {
+  attachAccessLog(nodeRequest, nodeResponse);
+
   try {
     if (await maybeServeStaticAsset(nodeRequest, nodeResponse)) {
       return;
