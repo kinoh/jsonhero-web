@@ -1,4 +1,5 @@
-import { createRequestHandler, matchRoutes } from "react-router";
+import { createRequestHandler } from "react-router";
+import { AsyncLocalStorage } from "node:async_hooks";
 import { createReadStream } from "node:fs";
 import { access, stat } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -41,36 +42,52 @@ const handleRequest = createRequestHandler(
   build,
   process.env.NODE_ENV ?? "production"
 );
+const requestConsoleStorage = new AsyncLocalStorage();
+const originalConsoleError = console.error.bind(console);
+const originalConsoleWarn = console.warn.bind(console);
 
-function createRouteMatcher(routeManifest) {
-  const routeMap = new Map();
+function bufferConsoleMessage(method, args) {
+  const requestConsoleState = requestConsoleStorage.getStore();
 
-  for (const route of Object.values(routeManifest)) {
-    routeMap.set(route.id, {
-      caseSensitive: route.caseSensitive,
-      children: [],
-      index: route.index,
-      path: route.path,
-    });
+  if (!requestConsoleState) {
+    method(...args);
+    return;
   }
 
-  const routes = [];
-
-  for (const route of Object.values(routeManifest)) {
-    const routeConfig = routeMap.get(route.id);
-
-    if (route.parentId) {
-      routeMap.get(route.parentId)?.children.push(routeConfig);
-      continue;
-    }
-
-    routes.push(routeConfig);
-  }
-
-  return (pathname) => matchRoutes(routes, pathname) !== null;
+  requestConsoleState.entries.push({ args, method });
 }
 
-const hasMatchingRoute = createRouteMatcher(build.routes);
+console.error = (...args) => {
+  bufferConsoleMessage(originalConsoleError, args);
+};
+
+console.warn = (...args) => {
+  bufferConsoleMessage(originalConsoleWarn, args);
+};
+
+function flushBufferedConsoleEntries() {
+  const requestConsoleState = requestConsoleStorage.getStore();
+
+  if (!requestConsoleState) {
+    return;
+  }
+
+  for (const entry of requestConsoleState.entries) {
+    entry.method(...entry.args);
+  }
+
+  requestConsoleState.entries.length = 0;
+}
+
+function clearBufferedConsoleEntries() {
+  const requestConsoleState = requestConsoleStorage.getStore();
+
+  if (!requestConsoleState) {
+    return;
+  }
+
+  requestConsoleState.entries.length = 0;
+}
 
 const contentTypes = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -262,53 +279,40 @@ async function maybeServeStaticAsset(nodeRequest, nodeResponse) {
   return false;
 }
 
-function maybeServeNotFound(nodeRequest, nodeResponse) {
-  const requestUrl = new URL(nodeRequest.url ?? "/", "http://localhost");
-
-  if (hasMatchingRoute(requestUrl.pathname)) {
-    return false;
-  }
-
-  nodeResponse.statusCode = 404;
-  nodeResponse.setHeader("Content-Type", "text/plain; charset=utf-8");
-
-  if (nodeRequest.method === "HEAD") {
-    nodeResponse.end();
-    return true;
-  }
-
-  nodeResponse.end("Not Found");
-  return true;
-}
-
 const server = createServer(async (nodeRequest, nodeResponse) => {
   attachAccessLog(nodeRequest, nodeResponse);
 
-  try {
-    if (await maybeServeStaticAsset(nodeRequest, nodeResponse)) {
-      return;
+  await requestConsoleStorage.run({ entries: [] }, async () => {
+    try {
+      if (await maybeServeStaticAsset(nodeRequest, nodeResponse)) {
+        clearBufferedConsoleEntries();
+        return;
+      }
+
+      const request = createFetchRequest(nodeRequest, nodeResponse);
+      const response = await handleRequest(request, {
+        waitUntil() {},
+      });
+
+      if (response.status >= 500) {
+        flushBufferedConsoleEntries();
+      } else {
+        clearBufferedConsoleEntries();
+      }
+
+      await sendFetchResponse(response, nodeResponse);
+    } catch (error) {
+      flushBufferedConsoleEntries();
+      originalConsoleError("self-hosted server failed", error);
+
+      if (!nodeResponse.headersSent) {
+        nodeResponse.statusCode = 500;
+        nodeResponse.setHeader("Content-Type", "text/plain; charset=utf-8");
+      }
+
+      nodeResponse.end("Internal Server Error");
     }
-
-    if (maybeServeNotFound(nodeRequest, nodeResponse)) {
-      return;
-    }
-
-    const request = createFetchRequest(nodeRequest, nodeResponse);
-    const response = await handleRequest(request, {
-      waitUntil() {},
-    });
-
-    await sendFetchResponse(response, nodeResponse);
-  } catch (error) {
-    console.error("self-hosted server failed", error);
-
-    if (!nodeResponse.headersSent) {
-      nodeResponse.statusCode = 500;
-      nodeResponse.setHeader("Content-Type", "text/plain; charset=utf-8");
-    }
-
-    nodeResponse.end("Internal Server Error");
-  }
+  });
 });
 
 const shutdownTimeoutMs = Number(process.env.SHUTDOWN_TIMEOUT_MS ?? "10000");
