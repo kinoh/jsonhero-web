@@ -28,7 +28,7 @@ export function SideBar() {
               1
             </ShortcutIcon>
           </ToolTip>
-          <TemplateIcon className="p-2 w-full h-full" />
+          <TemplateIcon className="m-2 w-6 h-6" />
         </SidebarLink>
         <SidebarLink
           to={`/j/${doc.id}/editor`}
@@ -44,7 +44,7 @@ export function SideBar() {
               2
             </ShortcutIcon>
           </ToolTip>
-          <CodeIcon className="p-2 w-full h-full" />
+          <CodeIcon className="m-2 w-6 h-6" />
         </SidebarLink>
         <SidebarLink
           to={`/j/${doc.id}/tree`}
@@ -60,7 +60,7 @@ export function SideBar() {
               3
             </ShortcutIcon>
           </ToolTip>
-          <TreeIcon className="p-2 w-full h-full" />
+          <TreeIcon className="m-2 w-6 h-6" />
         </SidebarLink>
       </ol>
       <ol>
@@ -69,7 +69,7 @@ export function SideBar() {
             <ToolTip arrow="left">
               <Body>Download</Body>
             </ToolTip>
-            <DownloadIcon className="p-2 w-full h-full" />
+            <DownloadIcon className="m-2 w-6 h-6" />
           </a>
         </SidebarLink>
       </ol>
