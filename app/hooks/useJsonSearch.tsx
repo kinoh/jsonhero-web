@@ -124,52 +124,6 @@ function reducer(
   }
 }
 
-let lastAction: any | undefined;
-
-function wrapReducer<S, A extends { type: string }>(
-  name: string,
-  reducer: React.Reducer<S, A>
-): React.Reducer<S, A> {
-  return (state, action) => {
-    const next = reducer(state, action);
-
-    if (process.env.NODE_ENV !== "production") {
-      if (!lastAction) {
-        console.groupCollapsed(
-          `%cAction: %c${
-            name + " " + action.type
-          } %cat ${getCurrentTimeFormatted()}`,
-          "color: lightgreen; font-weight: bold;",
-          "color: white; font-weight: bold;",
-          "color: lightblue; font-weight: lighter;"
-        );
-        console.log(
-          "%cPrevious State:",
-          "color: #9E9E9E; font-weight: 700;",
-          state
-        );
-        console.log("%cAction:", "color: #00A7F7; font-weight: 700;", action);
-        console.log("%cNext State:", "color: #47B04B; font-weight: 700;", next);
-        console.groupEnd();
-        lastAction = action;
-      } else {
-        lastAction = undefined;
-      }
-    }
-
-    return next;
-  };
-}
-
-const getCurrentTimeFormatted = () => {
-  const currentTime = new Date();
-  const hours = currentTime.getHours();
-  const minutes = currentTime.getMinutes();
-  const seconds = currentTime.getSeconds();
-  const milliseconds = currentTime.getMilliseconds();
-  return `${hours}:${minutes}:${seconds}.${milliseconds}`;
-};
-
 export function JsonSearchProvider({
   children,
 }: {
@@ -179,7 +133,7 @@ export function JsonSearchProvider({
 
   const [state, dispatch] = useReducer<
     React.Reducer<JsonSearchState, JsonSearchAction>
-  >(wrapReducer("jsonSearch", reducer), { status: "initializing" });
+  >(reducer, { status: "initializing" });
 
   const search = useCallback(
     (query: string) => {

@@ -25,9 +25,6 @@ type SearchWorkerEvent = InitializeIndexEvent | SearchEvent;
 self.onmessage = (e: MessageEvent<SearchWorkerEvent>) => {
   const { type, payload } = e.data;
 
-  console.group(`SearchWorker: ${type}`);
-  console.log(payload);
-
   switch (type) {
     case "initialize-index": {
       const { json } = payload;
@@ -53,20 +50,12 @@ self.onmessage = (e: MessageEvent<SearchWorkerEvent>) => {
 
       const results = self.searcher.search(query);
 
-      const end = performance.now();
-
-      console.log(`Search took ${end - start}ms`);
-
-      console.log("results", results);
-
       self.postMessage({
         type: "search-results",
         payload: { results, query },
       });
     }
   }
-
-  console.groupEnd();
 };
 
 function valueFormatter(value: unknown): string | undefined {
