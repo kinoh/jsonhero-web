@@ -89,13 +89,13 @@ function App() {
 
   return (
     <html lang="en" className={clsx(theme)}>
-      <head>
+      <head suppressHydrationWarning>
         <Meta />
         <meta charSet="utf-8" />
         <Links />
         <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
       </head>
-      <body className="overscroll-none">
+      <body className="overscroll-none" suppressHydrationWarning>
         <Outlet />
         <ScrollRestoration />
         <Scripts />
