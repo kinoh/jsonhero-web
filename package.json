@@ -33,8 +33,6 @@
   },
   "dependencies": {
     "@apihero/fetch": "^0.1.0",
-    "@codemirror/lang-json": "^0.19.1",
-    "@codemirror/rangeset": "^0.19.6",
     "@heroicons/react": "^1.0.5",
     "@js-temporal/polyfill": "^0.3.0",
     "@jsonhero/fuzzy-json-search": "^0.2.0",
@@ -50,7 +48,6 @@
     "@react-router/node": "^7.14.1",
     "@swan-io/boxed": "^0.2.1",
     "@tanstack/react-virtual": "^3.13.24",
-    "@uiw/react-codemirror": "^4.3.3",
     "@xmldom/xmldom": "^0.9.9",
     "clsx": "^1.1.1",
     "color": "^4.2.1",
