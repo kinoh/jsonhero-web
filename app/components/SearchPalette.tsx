@@ -25,7 +25,11 @@ import { JSONHeroPath } from "@jsonhero/path";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useJson } from "~/hooks/useJson";
 import { SearchResult } from "@jsonhero/fuzzy-json-search";
-import { Match } from "@jsonhero/fuzzy-json-search/lib/fuzzyScoring";
+
+type Match = {
+  start: number;
+  end: number;
+};
 
 export function SearchPalette({
   onSelect,

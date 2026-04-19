@@ -5,15 +5,8 @@ import {
   useParams,
   useRouteError,
   isRouteErrorResponse,
-} from "@remix-run/react";
-import { redirect } from "@remix-run/cloudflare";
-import type {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunction,
-  LoaderFunctionArgs,
-  MetaFunction,
-} from "@remix-run/cloudflare";
+  redirect,
+} from "react-router";
 import invariant from "tiny-invariant";
 import { deleteDocument, getDocument, JSONDocument } from "~/jsonDoc.server";
 import { JsonDocProvider } from "~/hooks/useJsonDoc";
@@ -44,10 +37,13 @@ import {
 } from "~/services/toast.server";
 import { getRandomUserAgent } from "~/utilities/getRandomUserAgent";
 
-export const loader: LoaderFunction = async ({
+export const loader = async ({
   params,
   request,
-}: LoaderFunctionArgs) => {
+}: {
+  params: { id?: string };
+  request: Request;
+}) => {
   invariant(params.id, "expected params.id");
 
   const doc = await getDocument(params.id);
@@ -98,12 +94,15 @@ export const loader: LoaderFunction = async ({
   }
 };
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
   params,
-}: ActionFunctionArgs) => {
-  // Return if the request is not a DELETE
-  if (request.method !== "DELETE") {
+}: {
+  request: Request;
+  params: { id?: string };
+}) => {
+  // React Router client-side form submissions normalize non-GET methods to POST.
+  if (request.method !== "DELETE" && request.method !== "POST") {
     return;
   }
 
@@ -169,7 +168,7 @@ type LoaderData = {
   minimal?: boolean;
 };
 
-export const meta: MetaFunction<typeof loader> = ({ data }: { data: LoaderData | undefined }) => {
+export const meta = ({ data }: { data: LoaderData | undefined }) => {
   let title = "JSON Hero";
 
   if (data?.doc?.title) {

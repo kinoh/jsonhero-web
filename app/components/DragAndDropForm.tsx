@@ -1,8 +1,14 @@
 import { ArrowCircleDownIcon } from "@heroicons/react/outline";
 import { useCallback, useRef } from "react";
-import { useDropzone } from "react-dropzone";
-import { Form, useSubmit } from "@remix-run/react";
+import * as reactDropzone from "react-dropzone";
+import { Form, useSubmit } from "react-router";
 import invariant from "tiny-invariant";
+
+const useDropzone =
+  reactDropzone.useDropzone ??
+  (reactDropzone as typeof reactDropzone & {
+    default?: { useDropzone?: typeof reactDropzone.useDropzone };
+  }).default?.useDropzone;
 
 export function DragAndDropForm() {
   const formRef = useRef<HTMLFormElement>(null);

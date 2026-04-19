@@ -1,6 +1,5 @@
 import { renderToString } from "react-dom/server";
-import { RemixServer } from "@remix-run/react";
-import type { EntryContext } from "@remix-run/cloudflare";
+import { ServerRouter, type EntryContext } from "react-router";
 
 export default function handleRequest(
   request: Request,
@@ -9,13 +8,13 @@ export default function handleRequest(
   remixContext: EntryContext
 ) {
   const markup = renderToString(
-    <RemixServer context={remixContext} url={request.url} />
+    <ServerRouter context={remixContext} url={request.url} />
   );
 
   responseHeaders.set("Content-Type", "text/html");
 
   return new Response("<!DOCTYPE html>" + markup, {
     status: responseStatusCode,
-    headers: responseHeaders
+    headers: responseHeaders,
   });
 }

@@ -1,5 +1,4 @@
-import { redirect } from "@remix-run/cloudflare";
-import type { ActionFunction, ActionFunctionArgs } from "@remix-run/cloudflare";
+import { redirect } from "react-router";
 import invariant from "tiny-invariant";
 import { sendEvent } from "~/graphJSON.server";
 import { createFromRawJson } from "~/jsonDoc.server";
@@ -9,10 +8,13 @@ type CreateFromFileError = {
   rawJson?: boolean;
 };
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
   context,
-}: ActionFunctionArgs) => {
+}: {
+  request: Request;
+  context: { waitUntil(promise: Promise<unknown>): void };
+}) => {
   const formData = await request.formData();
   const filename = formData.get("filename");
   const rawJson = formData.get("rawJson");

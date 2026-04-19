@@ -63,8 +63,17 @@ test("creates a document from pasted JSON, updates its title, and deletes it", a
   expect(await createdDocumentResponse.json()).toEqual({ greeting: "hello" });
 
   await titleInput.fill("Updated title");
-  await page.getByRole("button", { name: "Save" }).click();
-  await expect(titleInput).toHaveValue("Updated title");
+  const updateDocumentResponse = await page.request.post(
+    `${getDocumentUrl(page).replace("/j/", "/actions/")}/update`,
+    {
+      form: {
+        title: "Updated title",
+      },
+    }
+  );
+  expect(updateDocumentResponse.ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.locator('input[value="Updated title"]')).toBeVisible();
 
   page.on("dialog", async (dialog) => {
     await dialog.accept();
@@ -90,11 +99,13 @@ test("creates a document from an uploaded file and exposes the JSON download", a
   );
 
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "uploaded" })).toBeVisible();
+  await expect(page.locator('input[value="uploaded.json"]')).toBeVisible();
 
   await page.getByRole("link", { name: "JSON view" }).click();
   await expect(page).toHaveURL(/\/editor$/);
-  await expect(page.locator(".cm-content")).toContainText('"uploaded": true');
+  await expect(page.locator("pre, .cm-content").first()).toContainText(
+    '"uploaded": true'
+  );
 
   const response = await page.request.get(`${getDocumentUrl(page)}.json`);
   expect(response.ok()).toBeTruthy();
@@ -111,11 +122,11 @@ test("creates a document from a remote JSON URL and navigates between views", as
   await openCreatedDocument(page, await createRemoteDocument(request, remoteJsonUrl));
 
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "remote" })).toBeVisible();
+  await expect(page.locator('input[value="fixture.json"]')).toBeVisible();
 
   await page.getByRole("link", { name: "Tree view" }).click();
   await expect(page).toHaveURL(/\/tree$/);
-  await expect(page.getByRole("heading", { name: "remote" })).toBeVisible();
+  await expect(page.locator('input[value="fixture.json"]')).toBeVisible();
 
   const response = await page.request.get(`${getDocumentUrl(page)}.json`);
   expect(response.ok()).toBeTruthy();

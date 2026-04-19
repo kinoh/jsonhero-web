@@ -2,11 +2,11 @@ import { Temporal } from "@js-temporal/polyfill";
 import { JSONDateTimeFormat } from "@jsonhero/json-infer-types";
 
 export type InferredTemporal =
-  | Temporal.Instant
-  | Temporal.ZonedDateTime
-  | Temporal.PlainDateTime
-  | Temporal.PlainDate
-  | Temporal.PlainTime;
+  | ReturnType<typeof Temporal.Instant.from>
+  | ReturnType<typeof Temporal.ZonedDateTime.from>
+  | ReturnType<typeof Temporal.PlainDateTime.from>
+  | ReturnType<typeof Temporal.PlainDate.from>
+  | ReturnType<typeof Temporal.PlainTime.from>;
 
 export function inferTemporal(
   value: string,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, useNavigation } from "@remix-run/react";
+import { Form, useNavigation } from "react-router";
 
 export type UrlFormProps = {
   className?: string;

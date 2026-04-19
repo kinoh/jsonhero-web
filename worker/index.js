@@ -1,6 +1,6 @@
-import { createRequestHandler } from "@remix-run/cloudflare";
+import { createRequestHandler } from "react-router";
 
-import * as build from "../build";
+import * as build from "../build/server/server/index.js";
 
 const handleRequest = createRequestHandler(build, process.env.NODE_ENV);
 

@@ -5,9 +5,9 @@ import {
   useJsonColumnViewAPI,
   useJsonColumnViewState,
 } from "~/hooks/useJsonColumnView";
-import { ViewUpdate } from "@uiw/react-codemirror";
 import jsonMap from "json-source-map";
 import { JSONHeroPath } from "@jsonhero/path";
+import type { ViewUpdate } from "./CodeEditor.client";
 import {usePreferences} from '~/components/PreferencesProvider'
 
 export function JsonEditor() {
