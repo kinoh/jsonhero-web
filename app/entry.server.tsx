@@ -1,9 +1,21 @@
-import { ServerRouter, type EntryContext } from "react-router";
+import {
+  ServerRouter,
+  isRouteErrorResponse,
+  type EntryContext,
+} from "react-router";
 import ReactDOMServerBrowser from "react-dom/server.browser";
 
 const { renderToReadableStream } = ReactDOMServerBrowser;
 
 export const streamTimeout = 5_000;
+
+export function handleError(error: unknown) {
+  if (isRouteErrorResponse(error) && error.status < 500) {
+    return;
+  }
+
+  console.error(error);
+}
 
 export default async function handleRequest(
   request: Request,
@@ -31,7 +43,7 @@ export default async function handleRequest(
           responseStatusCode = 500;
 
           if (shellRendered) {
-            console.error(error);
+            handleError(error);
           }
         },
       }

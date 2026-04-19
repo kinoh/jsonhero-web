@@ -257,9 +257,14 @@ export default function JsonDocumentRoute() {
 export function ErrorBoundary() {
   const error = useRouteError();
   const params = useParams();
-  console.error("document route error", error);
-  const status = isRouteErrorResponse(error) ? error.status : 500;
-  const message = isRouteErrorResponse(error)
+  const isRouteResponse = isRouteErrorResponse(error);
+  const status = isRouteResponse ? error.status : 500;
+
+  if (!isRouteResponse || status >= 500) {
+    console.error("document route error", error);
+  }
+
+  const message = isRouteResponse
     ? error.data || (
         error.status === 404
           ? (
