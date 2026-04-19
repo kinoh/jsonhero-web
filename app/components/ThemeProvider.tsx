@@ -1,6 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import type { Dispatch, ReactNode, SetStateAction } from "react";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "react-router";
 
 export type Theme = "dark" | "light";
 
@@ -33,14 +33,16 @@ export function ThemeProvider({
       }
     }
 
-    // there's no way for us to know what the theme should be in this context
-    // the client will have to figure it out before hydration.
-    if (typeof window !== "object") {
+    return;
+  });
+
+  useEffect(() => {
+    if (specifiedTheme || themeOverride || theme) {
       return;
     }
 
-    return getPreferredTheme();
-  });
+    setTheme(getPreferredTheme());
+  }, [specifiedTheme, themeOverride, theme]);
 
   const mountRun = useRef(false);
   const persistTheme = useFetcher();

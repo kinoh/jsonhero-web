@@ -6,12 +6,7 @@ import {
   ScrollRestoration,
   useLoaderData,
   useLocation,
-} from "@remix-run/react";
-import type {
-  LinksFunction,
-  LoaderFunction,
-  MetaFunction,
-} from "@remix-run/cloudflare";
+} from "react-router";
 import clsx from "clsx";
 import {
   NonFlashOfWrongThemeEls,
@@ -22,7 +17,7 @@ import {
 
 import openGraphImage from "~/assets/images/opengraph.png";
 
-export const meta: MetaFunction = ({
+export const meta = ({
   location,
 }: {
   location: Location;
@@ -46,13 +41,13 @@ export const meta: MetaFunction = ({
   ];
 };
 
-import styles from "./tailwind.css";
+import styles from "./tailwind.css?url";
 import { getThemeSession } from "./theme.server";
 import { getStarCount } from "./services/github.server";
 import { StarCountProvider } from "./components/StarCountProvider";
 import { PreferencesProvider } from "~/components/PreferencesProvider";
 
-export const links: LinksFunction = () => {
+export const links = () => {
   return [{ rel: "stylesheet", href: styles }];
 };
 
@@ -62,7 +57,7 @@ export type LoaderData = {
   themeOverride?: Theme;
 };
 
-export const loader: LoaderFunction = async ({
+export const loader = async ({
   request,
 }: {
   request: Request;

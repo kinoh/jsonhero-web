@@ -1,13 +1,13 @@
 import { startTransition, StrictMode } from "react";
 import { hydrateRoot } from "react-dom/client";
-import { RemixBrowser } from "@remix-run/react";
+import { HydratedRouter } from "react-router/dom";
 import { load } from "fathom-client";
 
 startTransition(() => {
   hydrateRoot(
     document,
     <StrictMode>
-      <RemixBrowser />
+      <HydratedRouter />
     </StrictMode>
   );
 });

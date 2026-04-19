@@ -6,10 +6,9 @@ import {
   commitSession,
   getSession,
   ToastMessage,
-} from "../services/toast.server";
-import { useLoaderData } from "@remix-run/react";
-import { json } from "@remix-run/cloudflare";
-import ToastPopover from "../components/UI/ToastPopover";
+} from "~/services/toast.server";
+import { data, useLoaderData } from "react-router";
+import ToastPopover from "~/components/UI/ToastPopover";
 
 type LoaderData = { toastMessage?: ToastMessage };
 
@@ -18,7 +17,7 @@ export async function loader({ request }: { request: Request }) {
   const session = await getSession(cookie);
   const toastMessage = session.get("toastMessage") as ToastMessage;
 
-  return json(
+  return data(
     { toastMessage },
     {
       headers: { "Set-Cookie": await commitSession(session) },

@@ -1,17 +1,15 @@
-import { json } from "@remix-run/cloudflare";
-import type {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunction,
-  LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
+import {
+  data,
+} from "react-router";
 import invariant from "tiny-invariant";
 import { sendEvent } from "~/graphJSON.server";
 import { createFromRawJson, CreateJsonOptions } from "~/jsonDoc.server";
 
-export const loader: LoaderFunction = async ({
+export const loader = async ({
   request,
-}: LoaderFunctionArgs) => {
+}: {
+  request: Request;
+}) => {
   if (request.method === "OPTIONS") {
     return new Response(null, {
       status: 204,
@@ -25,10 +23,13 @@ export const loader: LoaderFunction = async ({
   }
 };
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
   context,
-}: ActionFunctionArgs) => {
+}: {
+  request: Request;
+  context: { waitUntil(promise: Promise<unknown>): void };
+}) => {
   const url = new URL(request.url);
   const body = (await request.json()) as {
     title?: unknown;
@@ -39,7 +40,7 @@ export const action: ActionFunction = async ({
   const { title, content, ttl, readOnly } = body;
 
   if (!title || !content) {
-    return json({ message: "Missing title or content" }, 400);
+    return data({ message: "Missing title or content" }, 400);
   }
 
   invariant(typeof title === "string", "title must be a string");
@@ -51,7 +52,7 @@ export const action: ActionFunction = async ({
 
   if (typeof ttl === "number") {
     if (ttl < 60) {
-      return json({ message: "ttl must be at least 60 seconds" }, 400);
+      return data({ message: "ttl must be at least 60 seconds" }, 400);
     }
 
     options.ttl = ttl;
@@ -76,7 +77,7 @@ export const action: ActionFunction = async ({
     })
   );
 
-  return json(
+  return data(
     { id: doc.id, title, location: url.toString() },
     {
       headers: {

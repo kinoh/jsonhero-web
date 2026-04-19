@@ -1,51 +1,28 @@
-import { json as jsonLang } from "@codemirror/lang-json";
-import { useCodeMirror } from "@uiw/react-codemirror";
-import { useRef, useEffect } from "react";
-import { getViewerSetup } from "~/utilities/codeMirrorSetup";
-import { darkTheme, lightTheme } from "~/utilities/codeMirrorTheme";
-import { useTheme } from "./ThemeProvider";
-import { useHotkeys } from "react-hotkeys-hook";
+import { useEffect, useState } from "react";
 
 export function CodeViewer({ code, lang }: { code: string; lang?: "json" }) {
-  const editor = useRef(null);
-
-  const extensions = getViewerSetup();
-
-  if (!lang || lang === "json") {
-    extensions.push(jsonLang());
-  }
-
-  const [theme] = useTheme();
-
-  const { setContainer, view, state } = useCodeMirror({
-    container: editor.current,
-    extensions,
-    value: code,
-    editable: false,
-    contentEditable: false,
-    autoFocus: false,
-    basicSetup: false,
-    theme: theme === "light" ? lightTheme() : darkTheme(),
-  });
+  const [ClientCodeViewer, setClientCodeViewer] = useState<null | ((props: {
+    code: string;
+    lang?: "json";
+  }) => JSX.Element)>(null);
 
   useEffect(() => {
-    if (editor.current) {
-      setContainer(editor.current);
-    }
-  }, [editor.current]);
+    let mounted = true;
 
-  useHotkeys(
-    "ctrl+a,meta+a,command+a",
-    (e) => {
-      e.preventDefault();
-      view?.dispatch({ selection: { anchor: 0, head: state?.doc.length } });
-    },
-    [view, state]
-  );
+    import("./CodeViewer.client").then((module) => {
+      if (mounted) {
+        setClientCodeViewer(() => module.CodeViewerClient);
+      }
+    });
 
-  return (
-    <div>
-      <div ref={editor} />
-    </div>
-  );
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  if (!ClientCodeViewer) {
+    return <pre className="overflow-auto whitespace-pre-wrap break-all">{code}</pre>;
+  }
+
+  return <ClientCodeViewer code={code} lang={lang} />;
 }

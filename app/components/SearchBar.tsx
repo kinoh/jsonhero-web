@@ -1,7 +1,13 @@
 import { SearchIcon } from "@heroicons/react/outline";
 import { ShortcutIcon } from "./Icons/ShortcutIcon";
 import { Body } from "./Primitives/Body";
-import { Dialog, DialogTrigger, DialogContent } from "./UI/Dialog";
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogTitle,
+  DialogDescription,
+} from "./UI/Dialog";
 
 import classnames from "~/utilities/classnames";
 import { SearchPalette } from "./SearchPalette";
@@ -25,7 +31,15 @@ export function SearchBar() {
   );
 
   return (
-    <Dialog open={isOpen} onOpenChange={() => !isOpen && searchApi.reset()}>
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        setIsOpen(open);
+        if (!open) {
+          searchApi.reset();
+        }
+      }}
+    >
       <DialogTrigger
         className="focus:outline-none focus-visible:outline-none"
         onClick={() => setIsOpen(true)}
@@ -55,6 +69,10 @@ export function SearchBar() {
           "bg-white border-[1px] border-slate-500 dark:border-slate-700 dark:bg-slate-800"
         )}
       >
+        <DialogTitle className="sr-only">Search JSON nodes</DialogTitle>
+        <DialogDescription className="sr-only">
+          Search for keys and values in the current JSON document.
+        </DialogDescription>
         <SearchPalette
           onClose={() => setIsOpen(false)}
           onSelect={(entry) => {

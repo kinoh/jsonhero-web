@@ -12,7 +12,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "./UI/Popover";
-import { Form } from "@remix-run/react";
+import { Form } from "react-router";
 import { useJsonDoc } from "~/hooks/useJsonDoc";
 import { LogoTriggerdotdev } from "./Icons/LogoTriggerdotdev";
 
@@ -32,7 +32,8 @@ export function Header() {
       <ol className="flex text-sm items-center gap-2 px-4">
         {!doc.readOnly && (
           <Form
-            method="delete"
+            method="post"
+            action={`/j/${doc.id}`}
             onSubmit={(e) =>
               !confirm(
                 "This will permanantly delete this document from jsonhero.io, are you sure you want to continue?"

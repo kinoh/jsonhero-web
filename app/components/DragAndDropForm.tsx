@@ -1,8 +1,14 @@
 import { ArrowCircleDownIcon } from "@heroicons/react/outline";
 import { useCallback, useRef } from "react";
-import { useDropzone } from "react-dropzone";
-import { Form, useSubmit } from "@remix-run/react";
+import * as reactDropzone from "react-dropzone";
+import { Form, useSubmit } from "react-router";
 import invariant from "tiny-invariant";
+
+const useDropzone =
+  reactDropzone.useDropzone ??
+  (reactDropzone as typeof reactDropzone & {
+    default?: { useDropzone?: typeof reactDropzone.useDropzone };
+  }).default?.useDropzone;
 
 export function DragAndDropForm() {
   const formRef = useRef<HTMLFormElement>(null);
@@ -69,7 +75,7 @@ export function DragAndDropForm() {
         className="block min-w-[300px] cursor-pointer rounded-md border-2 border-dashed border-slate-600 bg-slate-900/40 p-4 text-base text-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
       >
         <input {...getInputProps()} />
-        <div className="flex items-center">
+        <div className="pointer-events-none flex items-center">
           <ArrowCircleDownIcon
             className={`mr-3 inline h-6 w-6 ${
               isDragActive ? "text-lime-500" : ""

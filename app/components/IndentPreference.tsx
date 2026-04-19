@@ -27,7 +27,7 @@ export function IndentPreference() {
       <input
         type="number"
         className="py-0 pr-0 pl-1 w-9 rounded-sm text-sm h-[23px] bg-slate-300 transition hover:bg-slate-400 hover:bg-opacity-50 dark:bg-slate-800 dark:text-slate-400 hover:cursor-pointer hover:dark:bg-slate-700 hover:dark:bg-opacity-70"
-        defaultValue={preferences?.indent}
+        value={preferences?.indent ?? MIN_INDENT}
         min={MIN_INDENT}
         max={MAX_INDENT}
         onChange={updatePreferences}

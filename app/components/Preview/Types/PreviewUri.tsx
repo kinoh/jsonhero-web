@@ -1,6 +1,6 @@
 import { JSONStringType } from "@jsonhero/json-infer-types/lib/@types";
 import { useEffect } from "react";
-import { useFetcher } from "@remix-run/react";
+import { useFetcher } from "react-router";
 import { Body } from "~/components/Primitives/Body";
 import { useLoadWhenOnline } from "~/hooks/useLoadWhenOnline";
 import { PreviewBox } from "../PreviewBox";

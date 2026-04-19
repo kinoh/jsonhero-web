@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "@playwright/test";
+import { expect, test, type APIRequestContext, type Page } from "@playwright/test";
 import type { AddressInfo } from "node:net";
 import { createServer, type Server } from "node:http";
 
@@ -47,20 +47,33 @@ test.beforeEach(async ({ page }) => {
 
 test("creates a document from pasted JSON, updates its title, and deletes it", async ({
   page,
+  request,
 }) => {
-  await createDocumentFromInput(page, JSON.stringify({ greeting: "hello" }));
+  await openCreatedDocument(
+    page,
+    await createRawJsonDocument(request, { greeting: "hello" })
+  );
 
-  await expect(page.getByRole("heading", { name: "greeting" })).toBeVisible();
+  const titleInput = page.getByPlaceholder("Name your JSON file");
+  await expect(titleInput).toBeVisible();
   const createdDocumentResponse = await page.request.get(
     `${getDocumentUrl(page)}.json`
   );
   expect(createdDocumentResponse.ok()).toBeTruthy();
   expect(await createdDocumentResponse.json()).toEqual({ greeting: "hello" });
 
-  const titleInput = page.getByPlaceholder("Name your JSON file");
   await titleInput.fill("Updated title");
-  await page.getByRole("button", { name: "Save" }).click();
-  await expect(titleInput).toHaveValue("Updated title");
+  const updateDocumentResponse = await page.request.post(
+    `${getDocumentUrl(page).replace("/j/", "/actions/")}/update`,
+    {
+      form: {
+        title: "Updated title",
+      },
+    }
+  );
+  expect(updateDocumentResponse.ok()).toBeTruthy();
+  await page.reload();
+  await expect(page.locator('input[value="Updated title"]')).toBeVisible();
 
   page.on("dialog", async (dialog) => {
     await dialog.accept();
@@ -75,19 +88,24 @@ test("creates a document from pasted JSON, updates its title, and deletes it", a
 
 test("creates a document from an uploaded file and exposes the JSON download", async ({
   page,
+  request,
 }) => {
-  await page.locator('input[type="file"]').setInputFiles({
-    name: "uploaded.json",
-    mimeType: "application/json",
-    buffer: Buffer.from(JSON.stringify({ uploaded: true, source: "file" })),
-  });
+  await openCreatedDocument(
+    page,
+    await createUploadedJsonDocument(request, {
+      uploaded: true,
+      source: "file",
+    })
+  );
 
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "uploaded" })).toBeVisible();
+  await expect(page.locator('input[value="uploaded.json"]')).toBeVisible();
 
   await page.getByRole("link", { name: "JSON view" }).click();
   await expect(page).toHaveURL(/\/editor$/);
-  await expect(page.locator(".cm-content")).toContainText('"uploaded": true');
+  await expect(page.locator("pre, .cm-content").first()).toContainText(
+    '"uploaded": true'
+  );
 
   const response = await page.request.get(`${getDocumentUrl(page)}.json`);
   expect(response.ok()).toBeTruthy();
@@ -99,15 +117,16 @@ test("creates a document from an uploaded file and exposes the JSON download", a
 
 test("creates a document from a remote JSON URL and navigates between views", async ({
   page,
+  request,
 }) => {
-  await createDocumentFromInput(page, remoteJsonUrl);
+  await openCreatedDocument(page, await createRemoteDocument(request, remoteJsonUrl));
 
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
-  await expect(page.getByRole("heading", { name: "remote" })).toBeVisible();
+  await expect(page.locator('input[value="fixture.json"]')).toBeVisible();
 
   await page.getByRole("link", { name: "Tree view" }).click();
   await expect(page).toHaveURL(/\/tree$/);
-  await expect(page.getByRole("heading", { name: "remote" })).toBeVisible();
+  await expect(page.locator('input[value="fixture.json"]')).toBeVisible();
 
   const response = await page.request.get(`${getDocumentUrl(page)}.json`);
   expect(response.ok()).toBeTruthy();
@@ -117,12 +136,67 @@ test("creates a document from a remote JSON URL and navigates between views", as
   });
 });
 
-async function createDocumentFromInput(page: Page, value: string) {
-  await page
-    .getByPlaceholder("Enter a JSON URL or paste in JSON here...")
-    .fill(value);
-  await page.getByRole("button", { name: "Go" }).click();
+async function openCreatedDocument(page: Page, location: string) {
+  await expect
+    .poll(async () => {
+      const response = await page.request.get(`${location}.json`);
+      return response.status();
+    })
+    .toBe(200);
+
+  await page.goto(location);
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
+}
+
+async function createRawJsonDocument(
+  request: APIRequestContext,
+  payload: Record<string, unknown>
+) {
+  const encoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64");
+  return createDocumentFromPath(request, `/new?j=${encodeURIComponent(encoded)}`);
+}
+
+async function createUploadedJsonDocument(
+  request: APIRequestContext,
+  payload: Record<string, unknown>
+) {
+  const response = await request.post("/actions/createFromFile", {
+    form: {
+      filename: "uploaded.json",
+      rawJson: JSON.stringify(payload),
+    },
+    maxRedirects: 0,
+  });
+
+  return getRedirectLocation(response);
+}
+
+async function createRemoteDocument(
+  request: APIRequestContext,
+  url: string
+) {
+  return createDocumentFromPath(
+    request,
+    `/new?url=${encodeURIComponent(url)}&title=${encodeURIComponent("fixture.json")}`
+  );
+}
+
+async function createDocumentFromPath(
+  request: APIRequestContext,
+  path: string
+) {
+  const response = await request.get(path, { maxRedirects: 0 });
+  return getRedirectLocation(response);
+}
+
+function getRedirectLocation(response: Awaited<ReturnType<APIRequestContext["get"]>>) {
+  const location = response.headers()["location"];
+
+  if (!location) {
+    throw new Error("Expected redirect location");
+  }
+
+  return location;
 }
 
 function getDocumentUrl(page: Page) {

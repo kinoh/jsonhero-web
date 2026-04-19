@@ -1,10 +1,6 @@
-import { redirect } from "@remix-run/cloudflare";
-import type {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunction,
-  LoaderFunctionArgs,
-} from "@remix-run/cloudflare";
+import {
+  redirect,
+} from "react-router";
 import invariant from "tiny-invariant";
 import { createFromUrl, createFromUrlOrRawJson } from "~/jsonDoc.server";
 import { sendEvent } from "~/graphJSON.server";
@@ -12,16 +8,19 @@ import {
   commitSession,
   getSession,
   setErrorMessage,
-} from "../../services/toast.server";
+} from "~/services/toast.server";
 
 type CreateFromUrlError = {
   jsonUrl?: boolean;
 };
 
-export let action: ActionFunction = async ({
+export let action = async ({
   request,
   context,
-}: ActionFunctionArgs) => {
+}: {
+  request: Request;
+  context: { waitUntil(promise: Promise<unknown>): void };
+}) => {
   const formData = await request.formData();
   const toastCookie = await getSession(request.headers.get("cookie"));
   const jsonUrl = formData.get("jsonUrl");
@@ -77,10 +76,13 @@ export let action: ActionFunction = async ({
   }
 };
 
-export let loader: LoaderFunction = async ({
+export let loader = async ({
   request,
   context,
-}: LoaderFunctionArgs) => {
+}: {
+  request: Request;
+  context: { waitUntil(promise: Promise<unknown>): void };
+}) => {
   const url = new URL(request.url);
   const jsonUrl = url.searchParams.get("jsonUrl");
 

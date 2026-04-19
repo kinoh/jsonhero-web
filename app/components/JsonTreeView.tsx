@@ -104,6 +104,7 @@ export function JsonTreeView() {
               virtualNode={virtualNode}
               key={virtualNode.node.id}
               onToggle={(node, e) => tree.toggleNode(node.id, e)}
+              onFocus={(nodeId) => goToNodeId(nodeId, "tree")}
               selectedNodeId={selectedNodeId}
             />
           ))}
@@ -116,11 +117,13 @@ export function JsonTreeView() {
 function TreeViewNode({
   virtualNode,
   onToggle,
+  onFocus,
   selectedNodeId,
 }: {
   virtualNode: VirtualNode<JsonTreeViewNode>;
   selectedNodeId?: string;
   onToggle?: (node: JsonTreeViewNode, e: MouseEvent) => void;
+  onFocus?: (nodeId: string) => void;
 }) {
   const { node, virtualItem, depth } = virtualNode;
 
@@ -149,6 +152,7 @@ function TreeViewNode({
             ? "dark:bg-slate-900"
             : "bg-slate-100 bg-opacity-90 dark:bg-slate-800 dark:bg-opacity-30"
         }`}
+        onClick={() => onFocus?.(node.id)}
       >
         <div className={`pl-2 w-2/6 items-center flex`}>
           {node.children && node.children.length > 0 && (

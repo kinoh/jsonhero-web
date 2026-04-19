@@ -1,24 +1,25 @@
-import { json, redirect } from "@remix-run/cloudflare";
-import type {
-  ActionFunction,
-  ActionFunctionArgs,
-  LoaderFunction,
-} from "@remix-run/cloudflare";
+import {
+  data,
+  redirect,
+} from "react-router";
 import { getThemeSession } from "~/theme.server";
 import { isTheme } from "~/components/ThemeProvider";
 import { sendEvent } from "~/graphJSON.server";
 
-export const action: ActionFunction = async ({
+export const action = async ({
   request,
   context,
-}: ActionFunctionArgs) => {
+}: {
+  request: Request;
+  context: { waitUntil(promise: Promise<unknown>): void };
+}) => {
   const themeSession = await getThemeSession(request);
   const requestText = await request.text();
   const form = new URLSearchParams(requestText);
   const theme = form.get("theme");
 
   if (!isTheme(theme)) {
-    return json({
+    return data({
       success: false,
       message: `theme value of ${theme} is not a valid theme`,
     });
@@ -33,10 +34,10 @@ export const action: ActionFunction = async ({
     })
   );
 
-  return json(
+  return data(
     { success: true },
     { headers: { "Set-Cookie": await themeSession.commit() } }
   );
 };
 
-export const loader: LoaderFunction = () => redirect("/", { status: 404 });
+export const loader = () => redirect("/", { status: 404 });

@@ -19,13 +19,17 @@ import { getComponentSlices, getStringSlices } from "~/utilities/search";
 import classnames from "~/utilities/classnames";
 import { iconForValue } from "~/utilities/icons";
 import { useRef, useCallback } from "react";
-import { useVirtual } from "react-virtual";
+import { useVirtualizer } from "@tanstack/react-virtual";
 import { truncate } from "~/utilities/collections";
 import { JSONHeroPath } from "@jsonhero/path";
 import { useHotkeys } from "react-hotkeys-hook";
 import { useJson } from "~/hooks/useJson";
 import { SearchResult } from "@jsonhero/fuzzy-json-search";
-import { Match } from "@jsonhero/fuzzy-json-search/lib/fuzzyScoring";
+
+type Match = {
+  start: number;
+  end: number;
+};
 
 export function SearchPalette({
   onSelect,
@@ -49,9 +53,9 @@ export function SearchPalette({
 
   const listRef = useRef<HTMLElement>(null);
 
-  const rowVirtualizer = useVirtual({
-    size: (searchState.results ?? []).length,
-    parentRef: listRef,
+  const rowVirtualizer = useVirtualizer({
+    count: (searchState.results ?? []).length,
+    getScrollElement: () => listRef.current,
     estimateSize: useCallback(() => 70, []),
     overscan: 6,
   });
@@ -159,10 +163,10 @@ export function SearchPalette({
         >
           <li
             key="total-size"
-            style={{ height: rowVirtualizer.totalSize }}
+            style={{ height: rowVirtualizer.getTotalSize() }}
             className="mb-[1rem]"
           />
-          {rowVirtualizer.virtualItems.map((virtualRow) => {
+          {rowVirtualizer.getVirtualItems().map((virtualRow) => {
             const result = (searchState.results ?? [])[virtualRow.index];
 
             return (

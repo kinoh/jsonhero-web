@@ -7,18 +7,19 @@ import React, {
   useEffect,
   useRef,
 } from "react";
-import { useVirtual, VirtualItem } from "react-virtual";
+import { useVirtualizer, VirtualItem } from "@tanstack/react-virtual";
 
-type UseVirtualOptions<R> = Parameters<typeof useVirtual>[0];
+type UseVirtualOptions = Parameters<typeof useVirtualizer>[0];
 
 export type UseVirtualTreeOptions<
   T extends { id: string; children?: T[] },
-  R
+  R extends Element
 > = {
   id: string;
   persistState?: boolean;
   nodes: T[];
-} & Omit<UseVirtualOptions<R>, "size">;
+  parentRef: React.RefObject<R>;
+} & Omit<UseVirtualOptions, "count" | "getScrollElement">;
 
 export type VirtualNode<T> = {
   node: T;
@@ -202,7 +203,10 @@ function toggleAllChildren<T extends { id: string; children?: T[] }>(
   };
 }
 
-export function useVirtualTree<T extends { id: string; children?: T[] }, R>(
+export function useVirtualTree<
+  T extends { id: string; children?: T[] },
+  R extends Element
+>(
   options: UseVirtualTreeOptions<T, R>
 ): UseVirtualTreeInstance<T> {
   const reducer = useCallback<Reducer<TreeState<T>, TreeAction>>(
@@ -530,16 +534,15 @@ export function useVirtualTree<T extends { id: string; children?: T[] }, R>(
     }
   }, [options.persistState, options.id, dispatch, isStateRestored.current]);
 
-  const rowVirtualizer = useVirtual({
-    size: state.items.length,
-    parentRef: options.parentRef,
+  const rowVirtualizer = useVirtualizer({
+    count: state.items.length,
+    getScrollElement: () => options.parentRef.current,
     estimateSize: options.estimateSize,
     overscan: options.overscan,
     initialRect: options.initialRect,
-    useObserver: options.useObserver,
   });
 
-  const allVirtualNodes = rowVirtualizer.virtualItems.map((virtualItem) => {
+  const allVirtualNodes = rowVirtualizer.getVirtualItems().map((virtualItem) => {
     const treeItem = state.items[virtualItem.index];
 
     return {
@@ -594,7 +597,7 @@ export function useVirtualTree<T extends { id: string; children?: T[] }, R>(
 
   return {
     nodes: allVirtualNodes,
-    totalSize: rowVirtualizer.totalSize,
+    totalSize: rowVirtualizer.getTotalSize(),
     toggleNode,
     focusNode,
     focusFirst,

@@ -1,4 +1,4 @@
-import { createCookieSessionStorage } from "@remix-run/cloudflare";
+import { createCookieSessionStorage } from "react-router";
 
 import { Theme, isTheme } from "~/components/ThemeProvider";
 import { getSessionSecret } from "~/environment.server";

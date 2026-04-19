@@ -1,7 +1,6 @@
-import { createRequestHandler } from "@remix-run/cloudflare";
-import { handleAsset } from "@remix-run/cloudflare-workers";
+import { createRequestHandler } from "react-router";
 
-import * as build from "../build";
+import * as build from "../build/server/server/index.js";
 
 const handleRequest = createRequestHandler(build, process.env.NODE_ENV);
 
@@ -13,36 +12,11 @@ function setGlobalBindings(env) {
   globalThis.APIHERO_PROJECT_KEY = env.APIHERO_PROJECT_KEY;
 }
 
-async function getAssetResponse(event) {
-  try {
-    return await handleAsset(event, build);
-  } catch (error) {
-    if (error instanceof Error && error.message.includes("KV namespace bound")) {
-      return null;
-    }
-
-    throw error;
-  }
-}
-
 export default {
   async fetch(request, env, ctx) {
     setGlobalBindings(env);
 
-    const event = {
-      request,
-      waitUntil(promise) {
-        return ctx.waitUntil(promise);
-      },
-    };
-
     try {
-      const assetResponse = await getAssetResponse(event);
-
-      if (assetResponse) {
-        return assetResponse;
-      }
-
       return await handleRequest(request, {
         waitUntil(promise) {
           return ctx.waitUntil(promise);
