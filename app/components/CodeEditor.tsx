@@ -28,7 +28,7 @@ export function CodeEditor(opts: CodeEditorProps) {
 
   if (!ClientCodeEditor) {
     return (
-      <pre className="h-jsonViewerHeight overflow-auto whitespace-pre-wrap break-all">
+      <pre className="h-full overflow-auto whitespace-pre-wrap break-all">
         {opts.content}
       </pre>
     );

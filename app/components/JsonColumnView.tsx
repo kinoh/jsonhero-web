@@ -12,7 +12,7 @@ export function JsonColumnView() {
   return (
     <>
       <KeyboardShortcuts />
-      <div {...getColumnViewProps()}>
+      <div {...getColumnViewProps()} className="flex-1 min-h-0 flex">
         <Columns columns={columns} />
       </div>
     </>

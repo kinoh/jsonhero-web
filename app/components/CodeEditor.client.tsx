@@ -7,7 +7,6 @@ import {
 } from "@uiw/react-codemirror";
 import { useRef, useEffect } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
-import { useJsonDoc } from "~/hooks/useJsonDoc";
 import { getEditorSetup } from "~/utilities/codeMirrorSetup";
 import { darkTheme, lightTheme } from "~/utilities/codeMirrorTheme";
 import type { CodeEditorProps } from "./CodeEditor";
@@ -87,8 +86,6 @@ export function CodeEditorClient(opts: CodeEditorProps) {
     }
   }, [selection, view, setSelectionRef.current]);
 
-  const { minimal } = useJsonDoc();
-
   useHotkeys(
     "ctrl+a,meta+a,command+a",
     (e) => {
@@ -99,11 +96,9 @@ export function CodeEditorClient(opts: CodeEditorProps) {
   );
 
   return (
-    <div>
+    <div className="flex-1 min-h-0">
       <div
-        className={`${
-          minimal ? "h-jsonViewerHeightMinimal" : "h-jsonViewerHeight"
-        } overflow-y-auto no-scrollbar`}
+        className="h-full overflow-y-auto no-scrollbar"
         ref={editor}
       />
     </div>

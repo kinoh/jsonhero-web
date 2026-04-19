@@ -4,7 +4,6 @@ import {
   useJsonColumnViewAPI,
   useJsonColumnViewState,
 } from "~/hooks/useJsonColumnView";
-import { useJsonDoc } from "~/hooks/useJsonDoc";
 import { JsonTreeViewNode, useJsonTreeViewContext } from "~/hooks/useJsonTree";
 import { VirtualNode } from "~/hooks/useVirtualTree";
 import { CopySelectedNodeShortcut } from "./CopySelectedNode";
@@ -79,16 +78,13 @@ export function JsonTreeView() {
     }
   }, [treeRef.current]);
 
-  const { minimal } = useJsonDoc();
-
   return (
     <>
       <CopySelectedNodeShortcut />
       <div
-        className="text-white w-full"
+        className="text-white w-full flex-1 min-h-0"
         ref={parentRef}
         style={{
-          height: `calc(100vh - ${minimal ? "66px" : "106px"})`,
           overflowY: "auto",
           overflowX: "hidden",
         }}
