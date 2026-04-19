@@ -127,13 +127,16 @@ function SidebarLink({
     : "relative w-10 h-10 mb-1 text-slate-700 hover:bg-slate-300 rounded-sm cursor:pointer transition dark:text-white dark:hover:bg-slate-700";
 
   return !!to ? (
-    <Link
-      to={href}
-      prefetch={isActive ? "none" : "render"}
-      aria-label={label}
-    >
-      <li className={classes}>{children}</li>
-    </Link>
+    <li>
+      <Link
+        to={href}
+        prefetch={isActive ? "none" : "render"}
+        aria-label={label}
+        className={classes}
+      >
+        {children}
+      </Link>
+    </li>
   ) : (
     <li className={classes} aria-label={label}>
       {children}
