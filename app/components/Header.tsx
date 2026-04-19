@@ -33,6 +33,7 @@ export function Header() {
         {!doc.readOnly && (
           <Form
             method="post"
+            action={`/j/${doc.id}`}
             onSubmit={(e) =>
               !confirm(
                 "This will permanantly delete this document from jsonhero.io, are you sure you want to continue?"
