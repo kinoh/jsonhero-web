@@ -136,6 +136,27 @@ test("creates a document from a remote JSON URL and navigates between views", as
   });
 });
 
+test("renders header popovers above the document view", async ({
+  page,
+  request,
+}) => {
+  await openCreatedDocument(
+    page,
+    await createRawJsonDocument(request, { greeting: "hello" })
+  );
+
+  await page.getByRole("button", { name: "New" }).click();
+  await expect(
+    page.getByText("Drop a JSON file here, or click to select")
+  ).toBeVisible();
+  await page.keyboard.press("Escape");
+
+  await page.getByRole("button", { name: "Share" }).click();
+  await expect(
+    page.getByText("Anyone with this link can view this json file.")
+  ).toBeVisible();
+});
+
 async function openCreatedDocument(page: Page, location: string) {
   await expect
     .poll(async () => {

@@ -15,9 +15,11 @@ export const PopoverContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof PopoverPrimitive.Content>
 >(({ children, ...props }, ref) => {
   return (
-    <PopoverPrimitive.Content {...props} ref={ref}>
-      {children}
-    </PopoverPrimitive.Content>
+    <PopoverPrimitive.Portal>
+      <PopoverPrimitive.Content {...props} ref={ref}>
+        {children}
+      </PopoverPrimitive.Content>
+    </PopoverPrimitive.Portal>
   );
 });
 
