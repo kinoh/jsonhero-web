@@ -14,6 +14,7 @@
     "dev:search": "esbuild ./app/entry.worker.ts --outfile=./public/entry.worker.js --bundle --format=esm --define:process.env.NODE_ENV='\"development\"' --watch",
     "dev:worker": "esbuild --define:process.env.NODE_ENV='\"development\"' --bundle --format=esm --sourcemap --outdir=dist ./worker --watch",
     "start:worker": "wrangler dev --config wrangler.toml --assets build/client",
+    "start:self-hosted": "node ./server/self-hosted-server.mjs",
     "dev": "concurrently \"npm run dev:css\" \"npm run dev:search\" \"react-router dev --host 127.0.0.1 --port 3000 --strictPort\"",
     "dev:css": "tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css --watch",
     "start": "npm run dev",

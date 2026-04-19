@@ -1,8 +1,22 @@
+function getNodeEnvironmentValue(name: string) {
+  if (typeof process === "undefined") {
+    return undefined;
+  }
+
+  return process.env[name];
+}
+
 function getRequiredBinding(name: string) {
   const value = (globalThis as Record<string, unknown>)[name];
 
   if (value == null) {
-    throw new Error(`${String(name)} is not defined`);
+    const environmentValue = getNodeEnvironmentValue(name);
+
+    if (environmentValue == null) {
+      throw new Error(`${String(name)} is not defined`);
+    }
+
+    return environmentValue;
   }
 
   return value;

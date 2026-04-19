@@ -1,0 +1,12 @@
+.git
+.github
+.serena
+.wrangler
+build
+dist
+node_modules
+test-results
+coverage
+npm-debug.log*
+Dockerfile*
+compose*.yaml
