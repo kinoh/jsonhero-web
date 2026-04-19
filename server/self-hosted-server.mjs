@@ -3,9 +3,12 @@ import { createReadStream } from "node:fs";
 import { access, stat } from "node:fs/promises";
 import { createServer } from "node:http";
 import path from "node:path";
-import { Readable } from "node:stream";
 import { pipeline } from "node:stream/promises";
 import { fileURLToPath } from "node:url";
+import {
+  createReadableStreamFromReadable,
+  writeReadableStreamToWritable,
+} from "@react-router/node";
 import { createNodeDocumentsBinding } from "./documents-binding.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -62,7 +65,7 @@ function getContentType(filePath) {
   return contentTypes.get(path.extname(filePath)) ?? "application/octet-stream";
 }
 
-function createFetchRequest(request) {
+function createFetchRequest(request, response) {
   const origin = `http://${request.headers.host ?? "localhost"}`;
   const url = new URL(request.url ?? "/", origin);
   const headers = new Headers();
@@ -77,8 +80,13 @@ function createFetchRequest(request) {
     }
   }
 
-  const controller = new AbortController();
-  request.on("aborted", () => controller.abort());
+  let controller = new AbortController();
+  response.on("finish", () => {
+    controller = null;
+  });
+  response.on("close", () => {
+    controller?.abort();
+  });
 
   const init = {
     headers,
@@ -87,7 +95,7 @@ function createFetchRequest(request) {
   };
 
   if (request.method !== "GET" && request.method !== "HEAD") {
-    init.body = Readable.toWeb(request);
+    init.body = createReadableStreamFromReadable(request);
     init.duplex = "half";
   }
 
@@ -106,7 +114,7 @@ async function sendFetchResponse(response, nodeResponse) {
     return;
   }
 
-  await pipeline(Readable.fromWeb(response.body), nodeResponse);
+  await writeReadableStreamToWritable(response.body, nodeResponse);
 }
 
 function resolveStaticPath(rootDirectory, pathname) {
@@ -189,7 +197,7 @@ const server = createServer(async (nodeRequest, nodeResponse) => {
       return;
     }
 
-    const request = createFetchRequest(nodeRequest);
+    const request = createFetchRequest(nodeRequest, nodeResponse);
     const response = await handleRequest(request, {
       waitUntil() {},
     });
