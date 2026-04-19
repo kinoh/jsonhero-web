@@ -1,4 +1,7 @@
-module.exports = {
+import forms from "@tailwindcss/forms";
+import tailwindcssRadix from "tailwindcss-radix";
+
+export default {
   content: ["./app/**/*.{js,ts,jsx,tsx}"],
   darkMode: "class",
   theme: {
@@ -35,5 +38,5 @@ module.exports = {
   variants: {
     outline: ["focus"],
   },
-  plugins: [require("@tailwindcss/forms"), require("tailwindcss-radix")()],
+  plugins: [forms, tailwindcssRadix()],
 };

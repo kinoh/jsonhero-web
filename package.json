@@ -1,6 +1,7 @@
 {
   "private": true,
   "name": "@jsonhero/jsonhero-web",
+  "type": "module",
   "description": "A beautiful JSON viewer for the web",
   "license": "apache-2.0",
   "scripts": {
