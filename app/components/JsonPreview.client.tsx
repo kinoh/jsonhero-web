@@ -10,7 +10,7 @@ import {
   TransactionSpec,
 } from "@uiw/react-codemirror";
 import jsonMap from "json-source-map";
-import { useRef, useEffect, useMemo, useState } from "react";
+import { useRef, useEffect, useMemo } from "react";
 import { useHotkeys } from "react-hotkeys-hook";
 import { getPreviewSetup } from "~/utilities/codeMirrorSetup";
 import { lightTheme, darkTheme } from "~/utilities/codeMirrorTheme";
@@ -95,19 +95,13 @@ export function JsonPreviewClient({ json, highlightPath }: JsonPreviewProps) {
     [view, state]
   );
 
-  const [hovering, setHovering] = useState(false);
-
   return (
     <div
-      className="relative w-full h-full"
-      onMouseEnter={() => setHovering(true)}
-      onMouseLeave={() => setHovering(false)}
+      className="group relative h-full w-full"
     >
       <div ref={editor} />
       <div
-        className={`absolute top-1 right-0 flex w-full justify-end transition ${
-          hovering ? "opacity-100" : "opacity-0"
-        }`}
+        className="absolute top-1 right-0 flex w-full justify-end opacity-0 transition group-hover:opacity-100 group-focus-within:opacity-100"
       >
         <CopyTextButton
           value={jsonMapped.json}

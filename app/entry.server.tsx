@@ -1,20 +1,55 @@
-import { renderToString } from "react-dom/server";
 import { ServerRouter, type EntryContext } from "react-router";
+import ReactDOMServerBrowser from "react-dom/server.browser";
 
-export default function handleRequest(
+const { renderToReadableStream } = ReactDOMServerBrowser;
+
+export const streamTimeout = 5_000;
+
+export default async function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext
+  routerContext: EntryContext
 ) {
-  const markup = renderToString(
-    <ServerRouter context={remixContext} url={request.url} />
-  );
+  if (request.method.toUpperCase() === "HEAD") {
+    return new Response(null, {
+      status: responseStatusCode,
+      headers: responseHeaders,
+    });
+  }
 
-  responseHeaders.set("Content-Type", "text/html");
+  let shellRendered = false;
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), streamTimeout + 1_000);
 
-  return new Response("<!DOCTYPE html>" + markup, {
-    status: responseStatusCode,
-    headers: responseHeaders,
-  });
+  try {
+    const stream = await renderToReadableStream(
+      <ServerRouter context={routerContext} url={request.url} />,
+      {
+        signal: controller.signal,
+        onError(error: unknown) {
+          responseStatusCode = 500;
+
+          if (shellRendered) {
+            console.error(error);
+          }
+        },
+      }
+    );
+
+    shellRendered = true;
+
+    if (routerContext.isSpaMode) {
+      await stream.allReady;
+    }
+
+    responseHeaders.set("Content-Type", "text/html");
+
+    return new Response(stream, {
+      status: responseStatusCode,
+      headers: responseHeaders,
+    });
+  } finally {
+    clearTimeout(timeoutId);
+  }
 }

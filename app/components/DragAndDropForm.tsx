@@ -75,7 +75,7 @@ export function DragAndDropForm() {
         className="block min-w-[300px] cursor-pointer rounded-md border-2 border-dashed border-slate-600 bg-slate-900/40 p-4 text-base text-slate-300 focus:border-indigo-500 focus:ring-indigo-500"
       >
         <input {...getInputProps()} />
-        <div className="flex items-center">
+        <div className="pointer-events-none flex items-center">
           <ArrowCircleDownIcon
             className={`mr-3 inline h-6 w-6 ${
               isDragActive ? "text-lime-500" : ""
