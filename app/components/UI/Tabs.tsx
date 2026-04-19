@@ -1,5 +1,4 @@
 import * as TabsPrimitive from "@radix-ui/react-tabs";
-import type { ComponentPropsWithoutRef } from "@radix-ui/react-primitive";
 import React from "react";
 import cx from "~/utilities/classnames";
 
@@ -34,7 +33,7 @@ export function Tabs({ tabs, children }: TabProps) {
 
 export const TabContent = React.forwardRef<
   React.ElementRef<typeof TabsPrimitive.Content>,
-  ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
+  React.ComponentPropsWithoutRef<typeof TabsPrimitive.Content>
 >((props, ref) => {
-  return <TabsPrimitive.TabsContent ref={ref} {...props} />;
+  return <TabsPrimitive.Content ref={ref} {...props} />;
 });
