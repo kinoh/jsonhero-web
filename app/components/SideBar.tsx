@@ -130,7 +130,7 @@ function SidebarLink({
     <li>
       <Link
         to={href}
-        prefetch={isActive ? "none" : "render"}
+        prefetch={isActive ? "none" : "intent"}
         aria-label={label}
         className={classes}
       >
