@@ -1,5 +1,5 @@
 name = "jsonhero-io"
-type = "javascript"
+main = "dist/worker.js"
 compatibility_date = "2022-02-01"
 
 account_id = "0e405dda228e3448f1366acb0bc341ef"
@@ -14,14 +14,6 @@ GRAPH_JSON_COLLECTION = "jsonhero-dev"
 
 [site]
 bucket = "./public"
-entry-point = "."
-
-[build]
-command = "npm run build:worker"
-watch_dir = "build/index.js"
-
-[build.upload]
-format="service-worker"
 
 [env.production]
 route = "jsonhero.io/*"

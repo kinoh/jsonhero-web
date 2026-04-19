@@ -1,21 +1,23 @@
 import { createCookieSessionStorage } from "@remix-run/cloudflare";
 
 import { Theme, isTheme } from "~/components/ThemeProvider";
+import { getSessionSecret } from "~/environment.server";
 
-const sessionSecret = SESSION_SECRET;
-
-const themeStorage = createCookieSessionStorage({
-  cookie: {
-    name: "theme-cookie",
-    secure: true,
-    secrets: [sessionSecret],
-    sameSite: "lax",
-    path: "/",
-    httpOnly: true,
-  },
-});
+function getThemeStorage() {
+  return createCookieSessionStorage({
+    cookie: {
+      name: "theme-cookie",
+      secure: true,
+      secrets: [getSessionSecret()],
+      sameSite: "lax",
+      path: "/",
+      httpOnly: true,
+    },
+  });
+}
 
 async function getThemeSession(request: Request) {
+  const themeStorage = getThemeStorage();
   const session = await themeStorage.getSession(request.headers.get("Cookie"));
   return {
     getTheme: () => {

@@ -1,9 +1,15 @@
 import { createFetchProxy } from "@apihero/fetch";
+import { getApiheroProjectKey } from "~/environment.server";
 
-export const fetchProxy =
-  typeof APIHERO_PROJECT_KEY === "string"
-    ? createFetchProxy({
-        projectKey: APIHERO_PROJECT_KEY,
-        env: process.env.NODE_ENV,
-      })
-    : fetch;
+export function fetchProxy(input: RequestInfo | URL, init?: RequestInit) {
+  const projectKey = getApiheroProjectKey();
+
+  if (!projectKey) {
+    return fetch(input, init);
+  }
+
+  return createFetchProxy({
+    projectKey,
+    env: process.env.NODE_ENV,
+  })(input, init);
+}

@@ -1,5 +1,6 @@
 import { createCookieSessionStorage } from "@remix-run/cloudflare";
 import type { Session } from "@remix-run/cloudflare";
+import { getSessionSecret } from "~/environment.server";
 
 export type ToastMessage = {
   message: string;
@@ -10,17 +11,27 @@ export type ToastMessage = {
 
 const ONE_YEAR = 1000 * 60 * 60 * 24 * 365;
 
-export const { commitSession, getSession } = createCookieSessionStorage({
-  cookie: {
-    name: "__message",
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-    maxAge: ONE_YEAR,
-    secrets: [SESSION_SECRET],
-    secure: true,
-  },
-});
+function getToastStorage() {
+  return createCookieSessionStorage({
+    cookie: {
+      name: "__message",
+      path: "/",
+      httpOnly: true,
+      sameSite: "lax",
+      maxAge: ONE_YEAR,
+      secrets: [getSessionSecret()],
+      secure: true,
+    },
+  });
+}
+
+export function getSession(cookieHeader?: string | null) {
+  return getToastStorage().getSession(cookieHeader);
+}
+
+export function commitSession(session: Session) {
+  return getToastStorage().commitSession(session);
+}
 
 export function setSuccessMessage(
   session: Session,
