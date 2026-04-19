@@ -123,8 +123,8 @@ function SidebarLink({
   }
 
   const classes = isActive
-    ? "relative w-10 h-10 mb-1 text-white bg-indigo-700 rounded-sm cursor:pointer transition"
-    : "relative w-10 h-10 mb-1 text-slate-700 hover:bg-slate-300 rounded-sm cursor:pointer transition dark:text-white dark:hover:bg-slate-700";
+    ? "relative flex h-10 w-10 items-center justify-center mb-1 rounded-sm bg-indigo-700 text-white transition cursor-pointer"
+    : "relative flex h-10 w-10 items-center justify-center mb-1 rounded-sm text-slate-700 transition hover:bg-slate-300 cursor-pointer dark:text-white dark:hover:bg-slate-700";
 
   return !!to ? (
     <li>

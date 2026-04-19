@@ -2,12 +2,15 @@ import {
   Links,
   Meta,
   Outlet,
-  Scripts,
   ScrollRestoration,
+  UNSAFE_DataRouterContext as DataRouterContext,
+  UNSAFE_DataRouterStateContext as DataRouterStateContext,
+  UNSAFE_FrameworkContext as FrameworkContext,
   useLoaderData,
   useLocation,
 } from "react-router";
 import clsx from "clsx";
+import { useContext, useEffect, useMemo } from "react";
 import {
   NonFlashOfWrongThemeEls,
   Theme,
@@ -57,6 +60,8 @@ export type LoaderData = {
   themeOverride?: Theme;
 };
 
+let hasDocumentHydrated = false;
+
 export const loader = async ({
   request,
 }: {
@@ -84,21 +89,160 @@ function getThemeFromRequest(request: Request): Theme | undefined {
   return undefined;
 }
 
+function getActiveMatches(
+  matches: Array<{ route: { id: string } }>,
+  errors: Record<string, unknown> | null | undefined,
+  isSpaMode: boolean
+) {
+  if (isSpaMode && !hasDocumentHydrated) {
+    return [matches[0]];
+  }
+
+  if (errors) {
+    const errorIndex = matches.findIndex((match) => errors[match.route.id] !== undefined);
+    return matches.slice(0, errorIndex + 1);
+  }
+
+  return matches;
+}
+
+function DocumentScripts() {
+  const frameworkContext = useContext(FrameworkContext) as any;
+  const dataRouterContext = useContext(DataRouterContext) as any;
+  const routerState = useContext(DataRouterStateContext) as any;
+
+  useEffect(() => {
+    hasDocumentHydrated = true;
+  }, []);
+
+  const initialScripts = useMemo(() => {
+    if (!frameworkContext || !dataRouterContext || !routerState || hasDocumentHydrated) {
+      return null;
+    }
+
+    const {
+      manifest,
+      serverHandoffString,
+      isSpaMode,
+      renderMeta,
+      routeDiscovery,
+    } = frameworkContext;
+    const { router, static: isStatic, staticContext } = dataRouterContext;
+
+    if (renderMeta) {
+      renderMeta.didRenderScripts = true;
+    }
+
+    const matches = getActiveMatches(routerState.matches, routerState.errors, isSpaMode);
+    const enableFogOfWar = routeDiscovery.mode === "lazy" && frameworkContext.ssr === true;
+    const streamScript =
+      'window.__reactRouterContext.stream = new ReadableStream({start(controller){window.__reactRouterContext.streamController = controller;}}).pipeThrough(new TextEncoderStream());';
+    const contextScript = staticContext
+      ? `window.__reactRouterContext = ${serverHandoffString};${streamScript}`
+      : " ";
+    const routeModulesScript = !isStatic
+      ? " "
+      : `${manifest.hmr?.runtime ? `import ${JSON.stringify(manifest.hmr.runtime)};` : ""}${!enableFogOfWar ? `import ${JSON.stringify(manifest.url)};` : ""};
+${matches
+  .map((match: { route: { id: string } }, routeIndex: number) => {
+    const routeVarName = `route${routeIndex}`;
+    const manifestEntry = manifest.routes[match.route.id];
+
+    if (!manifestEntry) {
+      throw new Error(`Route ${match.route.id} not found in manifest`);
+    }
+
+    const {
+      clientActionModule,
+      clientLoaderModule,
+      clientMiddlewareModule,
+      hydrateFallbackModule,
+      module,
+    } = manifestEntry;
+
+    const chunks = [
+      ...(clientActionModule
+        ? [{ module: clientActionModule, varName: `${routeVarName}_clientAction` }]
+        : []),
+      ...(clientLoaderModule
+        ? [{ module: clientLoaderModule, varName: `${routeVarName}_clientLoader` }]
+        : []),
+      ...(clientMiddlewareModule
+        ? [{ module: clientMiddlewareModule, varName: `${routeVarName}_clientMiddleware` }]
+        : []),
+      ...(hydrateFallbackModule
+        ? [{ module: hydrateFallbackModule, varName: `${routeVarName}_HydrateFallback` }]
+        : []),
+      { module, varName: `${routeVarName}_main` },
+    ];
+
+    if (chunks.length === 1) {
+      return `import * as ${routeVarName} from ${JSON.stringify(module)};`;
+    }
+
+    const chunkImportsSnippet = chunks
+      .map((chunk) => `import * as ${chunk.varName} from "${chunk.module}";`)
+      .join("\n");
+    const mergedChunksSnippet = `const ${routeVarName} = {${chunks
+      .map((chunk) => `...${chunk.varName}`)
+      .join(",")}};`;
+
+    return [chunkImportsSnippet, mergedChunksSnippet].join("\n");
+  })
+  .join("\n")}
+  window.__reactRouterRouteModules = {${matches
+    .map((match: { route: { id: string } }, index: number) => `${JSON.stringify(match.route.id)}:route${index}`)
+    .join(",")}};
+
+import(${JSON.stringify(manifest.entry.module)});`;
+    const sri = typeof manifest.sri === "object" ? manifest.sri : {};
+
+    return (
+      <>
+        {typeof manifest.sri === "object" ? (
+          <script
+            rr-importmap=""
+            type="importmap"
+            suppressHydrationWarning
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                integrity: sri,
+              }),
+            }}
+          />
+        ) : null}
+        <script
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: contextScript }}
+        />
+        <script
+          type="module"
+          async
+          suppressHydrationWarning
+          dangerouslySetInnerHTML={{ __html: routeModulesScript }}
+        />
+      </>
+    );
+  }, [dataRouterContext, frameworkContext, routerState]);
+
+  return initialScripts;
+}
+
 function App() {
   const [theme] = useTheme();
 
   return (
     <html lang="en" className={clsx(theme)}>
-      <head suppressHydrationWarning>
+      <head>
         <Meta />
         <meta charSet="utf-8" />
         <Links />
         <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
       </head>
-      <body className="overscroll-none" suppressHydrationWarning>
+      <body className="overscroll-none">
         <Outlet />
         <ScrollRestoration />
-        <Scripts />
+        <DocumentScripts />
       </body>
     </html>
   );
