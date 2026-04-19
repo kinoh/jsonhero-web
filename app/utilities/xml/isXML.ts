@@ -9,17 +9,19 @@ export default function isXML(possibleXml: string): boolean {
   // as recommended in this documentation::
   // https://developer.mozilla.org/en-US/docs/Web/API/DOMParser/parseFromString#error_handling
 
-  const xmlDoc = new DOMParser({
-    onError(level) {
-      if (level !== "warning") {
-        isValid = false;
-      }
-    },
-  }).parseFromString(possibleXml, "application/xml");
+  try {
+    const xmlDoc = new DOMParser({
+      onError(level) {
+        if (level !== "warning") {
+          isValid = false;
+        }
+      },
+    }).parseFromString(possibleXml, "application/xml");
 
-  // This line is necessary because xmldom does not throw an error
-  // if we pass it a plain string.
-  if (!xmlDoc?.documentElement) isValid = false;
+    if (!xmlDoc?.documentElement) isValid = false;
+  } catch {
+    isValid = false;
+  }
 
   return isValid;
 }
