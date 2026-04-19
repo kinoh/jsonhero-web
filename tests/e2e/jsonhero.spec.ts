@@ -75,12 +75,11 @@ test("creates a document from pasted JSON, updates its title, and deletes it", a
   await page.reload();
   await expect(page.locator('input[value="Updated title"]')).toBeVisible();
 
-  page.on("dialog", async (dialog) => {
-    await dialog.accept();
-  });
-  await page.getByRole("button", { name: "Delete" }).click();
-
-  await expect(page).toHaveURL(/\/$/);
+  page.once("dialog", (dialog) => dialog.accept());
+  await Promise.all([
+    page.waitForURL(/\/$/),
+    page.getByRole("button", { name: "Delete" }).click(),
+  ]);
   await expect(
     page.getByRole("heading", { name: "Paste JSON or drop a file" })
   ).toBeVisible();
