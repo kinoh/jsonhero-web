@@ -207,6 +207,49 @@ const server = createServer(async (nodeRequest, nodeResponse) => {
   }
 });
 
+const shutdownTimeoutMs = Number(process.env.SHUTDOWN_TIMEOUT_MS ?? "10000");
+let isShuttingDown = false;
+let shutdownTimer = null;
+
+function shutdown(signal) {
+  if (isShuttingDown) {
+    return;
+  }
+
+  isShuttingDown = true;
+  console.log(`Received ${signal}, shutting down HTTP server`);
+
+  shutdownTimer = setTimeout(() => {
+    console.error("HTTP server shutdown timed out");
+
+    if (typeof server.closeAllConnections === "function") {
+      server.closeAllConnections();
+    }
+
+    process.exit(1);
+  }, shutdownTimeoutMs);
+
+  shutdownTimer.unref();
+
+  server.close((error) => {
+    if (shutdownTimer) {
+      clearTimeout(shutdownTimer);
+    }
+
+    if (error) {
+      console.error("Failed to shut down HTTP server cleanly", error);
+      process.exit(1);
+      return;
+    }
+
+    console.log("HTTP server stopped");
+    process.exit(0);
+  });
+}
+
+process.on("SIGTERM", () => shutdown("SIGTERM"));
+process.on("SIGINT", () => shutdown("SIGINT"));
+
 server.listen(port, host, () => {
   console.log(`JSON Hero listening on http://${host}:${port}`);
 });
