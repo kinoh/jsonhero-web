@@ -6,10 +6,10 @@ import {
   commitSession,
   getSession,
   ToastMessage,
-} from "../services/toast.server";
+} from "~/services/toast.server";
 import { useLoaderData } from "@remix-run/react";
 import { json } from "@remix-run/cloudflare";
-import ToastPopover from "../components/UI/ToastPopover";
+import ToastPopover from "~/components/UI/ToastPopover";
 
 type LoaderData = { toastMessage?: ToastMessage };
 
