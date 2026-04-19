@@ -6,7 +6,7 @@
   "license": "apache-2.0",
   "scripts": {
     "clean": "rimraf dist",
-    "build": "npm run build:css && npm run build:search && react-router build && npm run build:worker",
+    "build": "npm run build:css && npm run build:search && react-router build --mode production && npm run build:worker",
     "build:css": "tailwindcss -i ./styles/tailwind.css -o ./app/tailwind.css --minify",
     "build:worker": "esbuild --define:process.env.NODE_ENV='\"production\"' --minify --bundle --format=esm --sourcemap --outdir=dist ./worker",
     "build:worker:analyze": "esbuild --define:process.env.NODE_ENV='\"production\"' --minify --bundle --format=esm --sourcemap --metafile=meta.json --outdir=dist ./worker",
