@@ -1,4 +1,4 @@
-import { createRequestHandler } from "react-router";
+import { createRequestHandler, matchRoutes } from "react-router";
 import { createReadStream } from "node:fs";
 import { access, stat } from "node:fs/promises";
 import { createServer } from "node:http";
@@ -41,6 +41,36 @@ const handleRequest = createRequestHandler(
   build,
   process.env.NODE_ENV ?? "production"
 );
+
+function createRouteMatcher(routeManifest) {
+  const routeMap = new Map();
+
+  for (const route of Object.values(routeManifest)) {
+    routeMap.set(route.id, {
+      caseSensitive: route.caseSensitive,
+      children: [],
+      index: route.index,
+      path: route.path,
+    });
+  }
+
+  const routes = [];
+
+  for (const route of Object.values(routeManifest)) {
+    const routeConfig = routeMap.get(route.id);
+
+    if (route.parentId) {
+      routeMap.get(route.parentId)?.children.push(routeConfig);
+      continue;
+    }
+
+    routes.push(routeConfig);
+  }
+
+  return (pathname) => matchRoutes(routes, pathname) !== null;
+}
+
+const hasMatchingRoute = createRouteMatcher(build.routes);
 
 const contentTypes = new Map([
   [".css", "text/css; charset=utf-8"],
@@ -232,11 +262,34 @@ async function maybeServeStaticAsset(nodeRequest, nodeResponse) {
   return false;
 }
 
+function maybeServeNotFound(nodeRequest, nodeResponse) {
+  const requestUrl = new URL(nodeRequest.url ?? "/", "http://localhost");
+
+  if (hasMatchingRoute(requestUrl.pathname)) {
+    return false;
+  }
+
+  nodeResponse.statusCode = 404;
+  nodeResponse.setHeader("Content-Type", "text/plain; charset=utf-8");
+
+  if (nodeRequest.method === "HEAD") {
+    nodeResponse.end();
+    return true;
+  }
+
+  nodeResponse.end("Not Found");
+  return true;
+}
+
 const server = createServer(async (nodeRequest, nodeResponse) => {
   attachAccessLog(nodeRequest, nodeResponse);
 
   try {
     if (await maybeServeStaticAsset(nodeRequest, nodeResponse)) {
+      return;
+    }
+
+    if (maybeServeNotFound(nodeRequest, nodeResponse)) {
       return;
     }
 
