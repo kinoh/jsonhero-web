@@ -2,6 +2,7 @@
 set -euo pipefail
 
 log_file="$(mktemp)"
+playwright_browser_name="${PLAYWRIGHT_BROWSER_NAME:-chromium}"
 
 cleanup() {
   pkill -f 'playwright test|npm run start:e2e|react-router dev --host 127.0.0.1 --port 8788 --strictPort|dev:css|dev:search' >/dev/null 2>&1 || true
@@ -25,6 +26,7 @@ document_route_ready() {
 
 trap cleanup EXIT
 
+npx playwright install --only-shell "$playwright_browser_name" >/dev/null
 npm run clean >/dev/null
 npx react-router build >/dev/null
 npm run build:worker >/dev/null
