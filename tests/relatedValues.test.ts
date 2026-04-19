@@ -92,16 +92,16 @@ describe("calculateRelatedValuesGroups", () => {
     const result = calculateRelatedValuesGroups(path, json);
 
     expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "paths": Array [
+[
+  {
+    "paths": [
       "$.data.1.another_field",
       "$.data.2.another_field",
     ],
     "value": "{...}",
   },
-  Object {
-    "paths": Array [
+  {
+    "paths": [
       "$.data.0.another_field",
     ],
     "value": "undefined",
@@ -116,16 +116,16 @@ Array [
     const result = calculateRelatedValuesGroups(path, json);
 
     expect(result).toMatchInlineSnapshot(`
-Array [
-  Object {
-    "paths": Array [
+[
+  {
+    "paths": [
       "$.data.1.recent_asset_ids",
       "$.data.2.recent_asset_ids",
     ],
     "value": "Array(2)",
   },
-  Object {
-    "paths": Array [
+  {
+    "paths": [
       "$.data.0.recent_asset_ids",
     ],
     "value": "undefined",

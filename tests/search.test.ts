@@ -15,49 +15,49 @@ describe("getComponentSlices", () => {
     );
 
     expect(slices).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "componentIndex": 0,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "records",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 1,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "0",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 2,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "users",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "type": "ellipsis",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 7,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "street_name",
     },
@@ -80,62 +80,62 @@ Array [
     );
 
     expect(slices).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "componentIndex": 0,
-    "slice": Object {
+    "slice": {
       "isMatch": true,
       "slice": "re",
     },
     "type": "component",
   },
-  Object {
+  {
     "componentIndex": 0,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "cords",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "type": "ellipsis",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 6,
-    "slice": Object {
+    "slice": {
       "isMatch": true,
       "slice": "street",
     },
     "type": "component",
   },
-  Object {
+  {
     "componentIndex": 6,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "_address",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 7,
-    "slice": Object {
+    "slice": {
       "isMatch": true,
       "slice": "street",
     },
     "type": "component",
   },
-  Object {
+  {
     "componentIndex": 7,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "_name",
     },
@@ -153,40 +153,40 @@ Array [
     );
 
     expect(slices).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "componentIndex": 0,
-    "slice": Object {
+    "slice": {
       "isMatch": true,
       "slice": "reco",
     },
     "type": "component",
   },
-  Object {
+  {
     "componentIndex": 0,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "rds",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 1,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "0",
     },
     "type": "component",
   },
-  Object {
+  {
     "type": "join",
   },
-  Object {
+  {
     "componentIndex": 2,
-    "slice": Object {
+    "slice": {
       "isMatch": false,
       "slice": "users",
     },
@@ -206,16 +206,16 @@ describe("getStringSlices", () => {
     );
 
     expect(slices).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "isMatch": false,
     "slice": "This is a ",
   },
-  Object {
+  {
     "isMatch": true,
     "slice": "really",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": " great (short) string",
   },
@@ -235,32 +235,32 @@ Array [
     );
 
     expect(slices).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "isMatch": false,
     "slice": "…",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": " is outside of the windo",
   },
-  Object {
+  {
     "isMatch": true,
     "slice": "w, so we sh",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": "ould try ",
   },
-  Object {
+  {
     "isMatch": true,
     "slice": "and ge",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": "t only sl",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": "…",
   },
@@ -279,24 +279,24 @@ Array [
     );
 
     expect(slices2).toMatchInlineSnapshot(`
-Array [
-  Object {
+[
+  {
     "isMatch": false,
     "slice": "…",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": " incididunt ut labore et ",
   },
-  Object {
+  {
     "isMatch": true,
     "slice": "dolore",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": " magna aliqua. Ut enim ad",
   },
-  Object {
+  {
     "isMatch": false,
     "slice": "…",
   },

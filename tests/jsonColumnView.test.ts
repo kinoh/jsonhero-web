@@ -13,20 +13,20 @@ describe("generateColumnViewNode", () => {
     };
 
     expect(generateColumnViewNode(json)).toMatchInlineSnapshot(`
-Object {
-  "children": Array [
-    Object {
-      "children": Array [],
+{
+  "children": [
+    {
+      "children": [],
       "icon": [Function],
       "id": "$.string",
       "name": "string",
       "subtitle": "foo bar",
       "title": "string",
     },
-    Object {
-      "children": Array [
-        Object {
-          "children": Array [],
+    {
+      "children": [
+        {
+          "children": [],
           "icon": [Function],
           "id": "$.data.foo",
           "name": "foo",
@@ -40,12 +40,12 @@ Object {
       "subtitle": "1 field",
       "title": "data",
     },
-    Object {
-      "children": Array [
-        Object {
-          "children": Array [
-            Object {
-              "children": Array [],
+    {
+      "children": [
+        {
+          "children": [
+            {
+              "children": [],
               "icon": [Function],
               "id": "$.array.0.string",
               "name": "string",

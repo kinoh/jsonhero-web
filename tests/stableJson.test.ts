@@ -28,26 +28,26 @@ test("It should order object keys in a similar order as the first object in an a
 
   expect(JSON.stringify(stableJson(json), null, 2)).toMatchInlineSnapshot(`
 "{
-  \\"data\\": [
+  "data": [
     {
-      \\"id\\": \\"1\\",
-      \\"name\\": \\"A\\",
-      \\"title\\": \\"A Title\\",
-      \\"subtitle\\": \\"A Subtitle\\"
+      "id": "1",
+      "name": "A",
+      "title": "A Title",
+      "subtitle": "A Subtitle"
     },
     {
-      \\"name\\": \\"B\\",
-      \\"title\\": \\"B Title\\",
-      \\"uuid\\": \\"2\\",
-      \\"id\\": \\"2\\",
-      \\"subtitle\\": \\"B Subtitle\\"
+      "name": "B",
+      "title": "B Title",
+      "uuid": "2",
+      "id": "2",
+      "subtitle": "B Subtitle"
     },
     {
-      \\"id\\": \\"3\\",
-      \\"name\\": \\"C\\",
-      \\"title\\": \\"C Title\\",
-      \\"subtitle\\": \\"C Subtitle\\",
-      \\"extra\\": 1
+      "id": "3",
+      "name": "C",
+      "title": "C Title",
+      "subtitle": "C Subtitle",
+      "extra": 1
     }
   ]
 }"
@@ -115,67 +115,67 @@ test("It should order object keys in a similar order as the first object in an a
 
   expect(JSON.stringify(stableJson(json), null, 2)).toMatchInlineSnapshot(`
 "{
-  \\"data\\": [
+  "data": [
     {
-      \\"foo\\": [
+      "foo": [
         1,
         2,
         3
       ],
-      \\"bar\\": [
+      "bar": [
         {
-          \\"a\\": 1,
-          \\"b\\": 2
+          "a": 1,
+          "b": 2
         },
         {
-          \\"a\\": 4,
-          \\"b\\": 3
+          "a": 4,
+          "b": 3
         }
       ]
     },
     {
-      \\"objects\\": [
+      "objects": [
         {
-          \\"id\\": \\"1\\",
-          \\"name\\": \\"A\\",
-          \\"title\\": \\"A Title\\",
-          \\"subtitle\\": \\"A Subtitle\\"
+          "id": "1",
+          "name": "A",
+          "title": "A Title",
+          "subtitle": "A Subtitle"
         },
         {
-          \\"id\\": \\"2\\",
-          \\"name\\": \\"B\\",
-          \\"title\\": \\"B Title\\",
-          \\"subtitle\\": \\"B Subtitle\\",
-          \\"uuid\\": \\"2\\"
+          "id": "2",
+          "name": "B",
+          "title": "B Title",
+          "subtitle": "B Subtitle",
+          "uuid": "2"
         },
         {
-          \\"id\\": \\"3\\",
-          \\"name\\": \\"C\\",
-          \\"title\\": \\"C Title\\",
-          \\"subtitle\\": \\"C Subtitle\\",
-          \\"extra\\": 1
+          "id": "3",
+          "name": "C",
+          "title": "C Title",
+          "subtitle": "C Subtitle",
+          "extra": 1
         }
       ],
-      \\"objects2\\": [
+      "objects2": [
         {
-          \\"id\\": \\"1\\",
-          \\"name\\": \\"A\\",
-          \\"title\\": \\"A Title\\",
-          \\"subtitle\\": \\"A Subtitle\\"
+          "id": "1",
+          "name": "A",
+          "title": "A Title",
+          "subtitle": "A Subtitle"
         },
         {
-          \\"id\\": \\"2\\",
-          \\"name\\": \\"B\\",
-          \\"title\\": \\"B Title\\",
-          \\"subtitle\\": \\"B Subtitle\\",
-          \\"uuid\\": \\"2\\"
+          "id": "2",
+          "name": "B",
+          "title": "B Title",
+          "subtitle": "B Subtitle",
+          "uuid": "2"
         },
         {
-          \\"id\\": \\"3\\",
-          \\"name\\": \\"C\\",
-          \\"title\\": \\"C Title\\",
-          \\"subtitle\\": \\"C Subtitle\\",
-          \\"extra\\": 1
+          "id": "3",
+          "name": "C",
+          "title": "C Title",
+          "subtitle": "C Subtitle",
+          "extra": 1
         }
       ]
     }
@@ -194,7 +194,7 @@ test("It should not convert an array to an object in nested arrays", () => {
 
   expect(JSON.stringify(stableJson(json), null, 2)).toMatchInlineSnapshot(`
 "{
-  \\"data\\": [
+  "data": [
     [
       1
     ],
