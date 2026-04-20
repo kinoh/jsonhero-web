@@ -97,11 +97,11 @@ function App() {
         <Meta />
         <Links />
         <NonFlashOfWrongThemeEls ssrTheme={Boolean(theme)} />
+        <Scripts />
       </head>
       <body className="overscroll-none">
         <Outlet />
         <ScrollRestoration />
-        <Scripts />
       </body>
     </html>
   );
