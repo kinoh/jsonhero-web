@@ -33,6 +33,7 @@ cleanup
 
 npx playwright install --only-shell "$playwright_browser_name" >/dev/null
 npm run clean >/dev/null
+npm run build:css >/dev/null
 npx react-router build >/dev/null
 npm run build:worker >/dev/null
 
