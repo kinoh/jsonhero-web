@@ -5,7 +5,7 @@ import { SearchBar } from "./SearchBar";
 export function JsonView({ children }: { children: React.ReactNode }) {
   return (
     <div className="path-bar-and-column-wrapper flex flex-col flex-grow overflow-hidden border-l-[1px] border-slate-300 transition dark:border-slate-600">
-      <div className="flex flex-none justify-between p-1 bg-slate-200 border-slate-300 border-b-[1px] transition dark:bg-slate-900 dark:border-slate-600">
+      <div className="flex flex-none items-center justify-between h-10 p-1 bg-slate-200 border-slate-300 border-b-[1px] transition dark:bg-slate-900 dark:border-slate-600">
         <div className="flex-shrink-0 flex-grow-0">
           <PathHistoryControls />
         </div>
