@@ -1,26 +1,10 @@
-<div align="center">
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://imagedelivery.net/3TbraffuDZ4aEf8KWOmI_w/4a157bda-2a99-4ac3-6bc7-be08b4a46600/public">
-  <source media="(prefers-color-scheme: light)" srcset="https://imagedelivery.net/3TbraffuDZ4aEf8KWOmI_w/31447544-b16f-49dd-c206-74b1802c6700/public">
-  <img width=200 alt="Trigger.dev logo" src="https://imagedelivery.net/3TbraffuDZ4aEf8KWOmI_w/4a157bda-2a99-4ac3-6bc7-be08b4a46600/public">
-</picture>
-</div>
-
-</br>
-<p align="center">
-  <a href="https://console.algora.io/org/triggerdotdev/bounties?status=open"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fconsole.algora.io%2Fapi%2Fshields%2Ftriggerdotdev%2Fbounties%3Fstatus%3Dopen" alt="Open Bounties" /></a>
-  <a href="https://console.algora.io/org/triggerdotdev/bounties?status=completed"><img src="https://img.shields.io/endpoint?url=https%3A%2F%2Fconsole.algora.io%2Fapi%2Fshields%2Ftriggerdotdev%2Fbounties%3Fstatus%3Dcompleted" alt="Rewarded Bounties" /></a>
-</p>
-
-# Brought to you by Trigger.dev
-
-JSON Hero was created and is maintained by the team behind [Trigger.dev](https://trigger.dev). With Trigger.dev you can trigger workflows from APIs, on a schedule, or on demand. We make API calls easy with authentication handled for you, and you can add durable delays that survive server restarts.
-
-# About this fork
+# JSON Hero Fork
 
 This repository is a fork of [triggerdotdev/jsonhero-web](https://github.com/triggerdotdev/jsonhero-web).
 
 It keeps the original JSON Hero experience as the baseline, while adding changes focused on maintainability and self-hosting.
+
+The upstream project and brand belong to their original maintainers. This fork focuses on keeping the app usable in a self-hosted environment with current tooling.
 
 ## Fork-specific changes
 
@@ -37,6 +21,30 @@ For design notes behind those changes, see:
 - [docs/20260419_e2e_safety_net.md](docs/20260419_e2e_safety_net.md)
 - [docs/20260419_e2e_browser_install.md](docs/20260419_e2e_browser_install.md)
 - [docs/20260420_outbound_network_guard.md](docs/20260420_outbound_network_guard.md)
+
+## Quick start
+
+To run this fork locally:
+
+```bash
+git clone https://github.com/kinoh/jsonhero-web.git
+cd jsonhero-web
+npm install
+```
+
+Create a file at the root of the repo called `.env` and set the `SESSION_SECRET` value:
+
+```env
+SESSION_SECRET=abc123
+```
+
+To disable outbound HTTP(S) requests from the server runtime, set:
+
+```env
+JSONHERO_DISABLE_OUTBOUND_NETWORK=1
+```
+
+Run `npm run build` or `npm run dev`, then start the app with `npm start` and open `http://localhost:8787`.
 
 # JSON Hero
 
@@ -154,34 +162,8 @@ Easily see all the related values across your entire JSON document for a specifi
 
 <!-- TODO -->
 
-## Bugs and Feature Requests
+## Issues
 
-Have a bug or a feature request? Feel free to [open a new issue](https://github.com/triggerdotdev/jsonhero-web/issues).
+If you find a bug or want to propose a change for this fork, open an issue in this repository.
 
-You can also join our [Discord channel](https://discord.gg/JtBAxBr2m3) to hang out and discuss anything you'd like.
-
-## Developing
-
-To run locally, first clone the repo and install the dependencies:
-
-```bash
-git clone https://github.com/kinoh/jsonhero-web.git
-cd jsonhero-web
-npm install
-```
-
-Then, create a file at the root of the repo called `.env` and set the `SESSION_SECRET` value:
-
-```
-SESSION_SECRET=abc123
-```
-
-To disable outbound HTTP(S) requests from the server runtime, set:
-
-```
-JSONHERO_DISABLE_OUTBOUND_NETWORK=1
-```
-
-Then, run `npm run build` or `npm run dev` to build.
-
-Now, run `npm start` and open your browser to `http://localhost:8787`
+If your report is about upstream JSON Hero rather than the self-hosting and maintenance changes here, check the original project at [triggerdotdev/jsonhero-web](https://github.com/triggerdotdev/jsonhero-web).
