@@ -16,6 +16,28 @@
 
 JSON Hero was created and is maintained by the team behind [Trigger.dev](https://trigger.dev). With Trigger.dev you can trigger workflows from APIs, on a schedule, or on demand. We make API calls easy with authentication handled for you, and you can add durable delays that survive server restarts.
 
+# About this fork
+
+This repository is a fork of [triggerdotdev/jsonhero-web](https://github.com/triggerdotdev/jsonhero-web).
+
+It keeps the original JSON Hero experience as the baseline, while adding changes focused on maintainability and self-hosting.
+
+## Fork-specific changes
+
+- Migrated the app from Remix-era tooling to React Router v7 and Vite to keep the project buildable on current tooling.
+- Added a production-oriented Docker self-hosting path with a dedicated Node runtime and filesystem-backed document storage.
+- Added `JSONHERO_DISABLE_OUTBOUND_NETWORK=1` to hard-disable non-local outbound HTTP(S) requests for restricted deployments.
+- Added Playwright E2E coverage and browser provisioning so local and CI verification are reproducible on clean environments.
+- Fixed several self-hosting and UI regressions, including hydration mismatches, noisy 4xx server logs, and editor focus loss after view switching.
+
+For design notes behind those changes, see:
+
+- [docs/20260419_react_router_v7_migration.md](docs/20260419_react_router_v7_migration.md)
+- [docs/20260419_docker_self_hosting.md](docs/20260419_docker_self_hosting.md)
+- [docs/20260419_e2e_safety_net.md](docs/20260419_e2e_safety_net.md)
+- [docs/20260419_e2e_browser_install.md](docs/20260419_e2e_browser_install.md)
+- [docs/20260420_outbound_network_guard.md](docs/20260420_outbound_network_guard.md)
+
 # JSON Hero
 
 JSON Hero makes reading and understand JSON files easy by giving you a clean and beautiful UI packed with extra features.
@@ -143,7 +165,7 @@ You can also join our [Discord channel](https://discord.gg/JtBAxBr2m3) to hang o
 To run locally, first clone the repo and install the dependencies:
 
 ```bash
-git clone https://github.com/triggerdotdev/jsonhero-web.git
+git clone https://github.com/kinoh/jsonhero-web.git
 cd jsonhero-web
 npm install
 ```
