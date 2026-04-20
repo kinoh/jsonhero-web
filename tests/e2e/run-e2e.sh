@@ -46,7 +46,9 @@ if [[ "${JSONHERO_DISABLE_OUTBOUND_NETWORK:-0}" == "1" ]]; then
   JSONHERO_DISABLE_OUTBOUND_NETWORK=1 \
   npm run start:self-hosted >"$log_file" 2>&1 &
 else
-  JSONHERO_DISABLE_GITHUB_FETCH=1 npm run start:e2e >"$log_file" 2>&1 &
+  SESSION_SECRET="e2e-session-secret" \
+  JSONHERO_DISABLE_GITHUB_FETCH=1 \
+  npm run start:e2e >"$log_file" 2>&1 &
 fi
 
 for _ in $(seq 1 90); do
