@@ -1,24 +1,32 @@
 import { useEffect, useRef } from "react";
 
-export function useLoadWhenOnline(callback: () => void, deps: unknown[] = []) {
-    const callbackRef = useRef <() => void>(callback);
+export function useLoadWhenOnline(
+  callback: () => void,
+  deps: unknown[] = [],
+  enabled = true
+) {
+  const callbackRef = useRef<() => void>(callback);
 
-    useEffect(() => {
-        callbackRef.current = callback;
-    });
+  useEffect(() => {
+    callbackRef.current = callback;
+  });
 
-    useEffect(() => {
-        const cb = () => callbackRef.current();
+  useEffect(() => {
+    if (!enabled) {
+      return;
+    }
 
-        if (window.navigator.onLine) {
-            cb();
-            return;
-        }
+    const cb = () => callbackRef.current();
 
-        window.addEventListener("online", cb);
+    if (window.navigator.onLine) {
+      cb();
+      return;
+    }
 
-        return () => {
-            window.removeEventListener("online", cb);
-        };
-    }, [...deps]);
+    window.addEventListener("online", cb);
+
+    return () => {
+      window.removeEventListener("online", cb);
+    };
+  }, [enabled, ...deps]);
 }

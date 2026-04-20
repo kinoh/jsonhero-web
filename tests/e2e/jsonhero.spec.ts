@@ -220,6 +220,29 @@ test.describe("when outbound network is disabled", () => {
       error: "URL previews are disabled on this server",
     });
   });
+
+  test("does not request previews from the client", async ({ page, request }) => {
+    const documentLocation = await createRawJsonDocument(request, {
+      homepage: "https://example.com",
+    });
+    let previewRequestCount = 0;
+
+    await page.route("**/actions/getPreview/**", async (route) => {
+      previewRequestCount += 1;
+      await route.fulfill({
+        status: 200,
+        contentType: "application/json",
+        body: JSON.stringify({ error: "unexpected preview request" }),
+      });
+    });
+
+    await openCreatedDocument(page, documentLocation);
+    await expect(
+      page.getByText("https://example.com", { exact: true }).first()
+    ).toBeVisible();
+    await expect(page.getByText("unexpected preview request")).toHaveCount(0);
+    expect(previewRequestCount).toBe(0);
+  });
 });
 
 test("renders header popovers above the document view", async ({
