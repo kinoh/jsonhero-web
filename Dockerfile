@@ -1,4 +1,4 @@
-FROM node:24-bookworm-slim AS base
+FROM node:24-alpine AS base
 
 ENV NODE_ENV=production
 WORKDIR /app
@@ -20,8 +20,8 @@ FROM base AS runner
 ENV PORT=3000
 ENV JSONHERO_STORAGE_DIR=/data/documents
 
-RUN groupadd --system --gid 1001 nodejs \
-  && useradd --system --uid 1001 --gid nodejs jsonhero \
+RUN addgroup -S -g 1001 nodejs \
+  && adduser -S -u 1001 -G nodejs jsonhero \
   && mkdir -p /data/documents \
   && chown -R jsonhero:nodejs /app /data
 
