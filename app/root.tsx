@@ -42,6 +42,7 @@ export const meta = ({
 };
 
 import styles from "./tailwind.css?url";
+import { isOutboundNetworkDisabled } from "./environment.server";
 import { getThemeSession } from "./theme.server";
 import { getStarCount } from "./services/github.server";
 import { StarCountProvider } from "./components/StarCountProvider";
@@ -55,6 +56,7 @@ export type LoaderData = {
   theme?: Theme;
   starCount?: number;
   themeOverride?: Theme;
+  outboundNetworkDisabled: boolean;
 };
 
 export const loader = async ({
@@ -70,6 +72,7 @@ export const loader = async ({
     theme: themeSession.getTheme(),
     starCount,
     themeOverride,
+    outboundNetworkDisabled: isOutboundNetworkDisabled(),
   };
 
   return data;
