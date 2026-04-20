@@ -10,8 +10,8 @@ import {
   createReadableStreamFromReadable,
   writeReadableStreamToWritable,
 } from "@react-router/node";
-import { assertOutboundNetworkAllowed } from "../app/environment.server";
 import { createNodeDocumentsBinding } from "./documents-binding.mjs";
+import { assertOutboundNetworkAllowed } from "./outbound-network.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);

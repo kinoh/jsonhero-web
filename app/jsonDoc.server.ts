@@ -1,4 +1,8 @@
 import { customRandom } from "nanoid";
+import {
+  isOutboundNetworkDisabled,
+  requiresOutboundNetwork,
+} from "./environment.server";
 import safeFetch from "./utilities/safeFetch";
 import createFromRawXml from "./utilities/xml/createFromRawXml";
 import isXML from "./utilities/xml/isXML";
@@ -53,6 +57,10 @@ export async function createFromUrl(
   title?: string,
   options?: CreateJsonOptions
 ): Promise<JSONDocument> {
+  if (isOutboundNetworkDisabled() && requiresOutboundNetwork(url)) {
+    throw new Error("External URL documents are disabled on this server");
+  }
+
   if (options?.injest) {
     const response = await safeFetch(url.href);
 

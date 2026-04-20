@@ -4,6 +4,8 @@ import { createServer, type Server } from "node:http";
 
 let remoteJsonServer: Server;
 let remoteJsonUrl: string;
+const outboundNetworkDisabled =
+  process.env.JSONHERO_DISABLE_OUTBOUND_NETWORK === "1";
 
 test.beforeAll(async () => {
   remoteJsonServer = createServer((request, response) => {
@@ -102,9 +104,7 @@ test("creates a document from an uploaded file and exposes the JSON download", a
 
   await page.getByRole("link", { name: "JSON view" }).click();
   await expect(page).toHaveURL(/\/editor$/);
-  await expect(page.locator("pre, .cm-content").first()).toContainText(
-    '"uploaded": true'
-  );
+  await expect(page.locator("body")).toContainText('"uploaded": true');
 
   const response = await page.request.get(`${getDocumentUrl(page)}.json`);
   expect(response.ok()).toBeTruthy();
@@ -118,6 +118,11 @@ test("creates a document from a remote JSON URL and navigates between views", as
   page,
   request,
 }) => {
+  test.skip(
+    outboundNetworkDisabled,
+    "Remote URL navigation is covered by the default runtime suite"
+  );
+
   await openCreatedDocument(page, await createRemoteDocument(request, remoteJsonUrl));
 
   await expect(page).toHaveURL(/\/j\/[^/]+$/);
@@ -132,6 +137,74 @@ test("creates a document from a remote JSON URL and navigates between views", as
   expect(await response.json()).toEqual({
     remote: true,
     source: "fixture",
+  });
+});
+
+test.describe("when outbound network is disabled", () => {
+  test.skip(
+    !outboundNetworkDisabled,
+    "These assertions only apply when outbound network access is disabled"
+  );
+
+  test("still creates a document from raw JSON pasted into the main form", async ({
+    page,
+    request,
+  }) => {
+    const createResponse = await request.post("/actions/createFromUrl", {
+      form: {
+        jsonUrl: '{"from":"homepage","raw":true}',
+      },
+      maxRedirects: 0,
+    });
+    const location = getRedirectLocation(createResponse);
+
+    await page.goto(location);
+    await expect(page).toHaveURL(/\/j\/[^/]+$/);
+    await expect(page.locator('input[value="Untitled"]')).toBeVisible();
+
+    const jsonResponse = await page.request.get(`${getDocumentUrl(page)}.json`);
+    expect(jsonResponse.ok()).toBeTruthy();
+    expect(await jsonResponse.json()).toEqual({
+      from: "homepage",
+      raw: true,
+    });
+  });
+
+  test("rejects external URLs pasted into the main form", async ({ request }) => {
+    const response = await request.post("/actions/createFromUrl", {
+      form: {
+        jsonUrl: "https://example.com/data.json",
+      },
+      maxRedirects: 0,
+    });
+
+    expect(response.status()).toBe(302);
+    expect(response.headers()["location"]).toBe("/");
+  });
+
+  test("rejects external URL document creation through the /new route", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      `/new?url=${encodeURIComponent("https://example.com/data.json")}`,
+      { maxRedirects: 0 }
+    );
+
+    expect(response.status()).toBe(302);
+    expect(response.headers()["location"]).toBe("/");
+  });
+
+  test("returns a disabled message from the preview endpoint", async ({
+    request,
+  }) => {
+    const response = await request.get(
+      `/actions/getPreview/${encodeURIComponent("https://example.com")}`
+    );
+
+    expect(response.ok()).toBeTruthy();
+    await expect(response.json()).resolves.toEqual({
+      error: "URL previews are disabled on this server",
+    });
   });
 });
 

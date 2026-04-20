@@ -1,11 +1,20 @@
 import { redirect } from "react-router";
 import invariant from "tiny-invariant";
+import {
+  isOutboundNetworkDisabled,
+  requiresOutboundNetwork,
+} from "~/environment.server";
 import { sendEvent } from "~/graphJSON.server";
 import {
   createFromRawJson,
   createFromUrl,
   CreateJsonOptions,
 } from "~/jsonDoc.server";
+import {
+  commitSession,
+  getSession,
+  setErrorMessage,
+} from "~/services/toast.server";
 
 export let loader = async ({
   request,
@@ -15,6 +24,7 @@ export let loader = async ({
   context: { waitUntil(promise: Promise<unknown>): void };
 }) => {
   const url = new URL(request.url);
+  const toastCookie = await getSession(request.headers.get("cookie"));
   const jsonUrl = url.searchParams.get("url");
   const base64EncodedJson = url.searchParams.get("j");
   const ttl = url.searchParams.get("ttl");
@@ -46,6 +56,18 @@ export let loader = async ({
 
   if (jsonUrl) {
     const jsonURL = new URL(jsonUrl);
+
+    if (isOutboundNetworkDisabled() && requiresOutboundNetwork(jsonURL)) {
+      setErrorMessage(
+        toastCookie,
+        "External URL documents are disabled on this server",
+        "Something went wrong"
+      );
+
+      return redirect("/", {
+        headers: { "Set-Cookie": await commitSession(toastCookie) },
+      });
+    }
 
     invariant(jsonURL, "url must be a valid URL");
 

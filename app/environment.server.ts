@@ -56,12 +56,19 @@ export function isOutboundNetworkDisabled() {
   return value === "1";
 }
 
-function isLoopbackHostname(hostname: string) {
+export function isLoopbackHostname(hostname: string) {
   return (
     hostname === "localhost" ||
     hostname === "127.0.0.1" ||
     hostname === "::1" ||
     hostname === "[::1]"
+  );
+}
+
+export function requiresOutboundNetwork(url: URL) {
+  return (
+    (url.protocol === "http:" || url.protocol === "https:") &&
+    !isLoopbackHostname(url.hostname)
   );
 }
 
@@ -88,10 +95,7 @@ export function assertOutboundNetworkAllowed(input: RequestInfo | URL) {
     return;
   }
 
-  if (
-    (url.protocol === "http:" || url.protocol === "https:") &&
-    !isLoopbackHostname(url.hostname)
-  ) {
+  if (requiresOutboundNetwork(url)) {
     throw new Error(
       `Outbound network requests are disabled: ${url.origin}${url.pathname}`
     );
