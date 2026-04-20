@@ -1,8 +1,21 @@
 import invariant from "tiny-invariant";
+import { isOutboundNetworkDisabled } from "~/environment.server";
 import { getUriPreview } from "~/services/uriPreview.server";
 
 export const loader = async ({ params }: { params: { url?: string } }) => {
   try {
+    if (isOutboundNetworkDisabled()) {
+      return new Response(
+        JSON.stringify({ error: "URL previews are disabled on this server" }),
+        {
+          headers: {
+            "Content-Type": "application/json; charset=utf-8",
+            "Cache-Control": "public, max-age=3600",
+          },
+        }
+      );
+    }
+
     invariant(params.url, "expected params.url");
 
     const decoded = decodeURIComponent(params.url);

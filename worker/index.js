@@ -1,4 +1,8 @@
 import { createRequestHandler } from "react-router";
+import {
+  assertOutboundNetworkAllowed,
+  isOutboundNetworkDisabled,
+} from "../app/environment.server";
 
 import * as build from "../build/server/server/index.js";
 
@@ -10,7 +14,19 @@ function setGlobalBindings(env) {
   globalThis.GRAPH_JSON_COLLECTION = env.GRAPH_JSON_COLLECTION;
   globalThis.GRAPH_JSON_API_KEY = env.GRAPH_JSON_API_KEY;
   globalThis.APIHERO_PROJECT_KEY = env.APIHERO_PROJECT_KEY;
+  globalThis.JSONHERO_DISABLE_OUTBOUND_NETWORK =
+    env.JSONHERO_DISABLE_OUTBOUND_NETWORK;
 }
+
+const originalFetch = globalThis.fetch.bind(globalThis);
+
+globalThis.fetch = (input, init) => {
+  if (isOutboundNetworkDisabled()) {
+    assertOutboundNetworkAllowed(input);
+  }
+
+  return originalFetch(input, init);
+};
 
 export default {
   async fetch(request, env, ctx) {

@@ -10,6 +10,7 @@ services:
       PORT: "3000"
       SESSION_SECRET: "replace-with-a-long-random-secret"
       JSONHERO_STORAGE_DIR: "/data/documents"
+      JSONHERO_DISABLE_OUTBOUND_NETWORK: "1"
     volumes:
       - jsonhero_data:/data
     restart: unless-stopped

@@ -1,7 +1,11 @@
+import { assertOutboundNetworkAllowed } from "~/environment.server";
+
 export default function safeFetch(
   url: string,
   options: RequestInit = {}
 ): Promise<Response> {
+  assertOutboundNetworkAllowed(url);
+
   return fetch(url, {
     ...options,
     headers: {

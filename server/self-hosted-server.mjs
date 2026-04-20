@@ -10,6 +10,7 @@ import {
   createReadableStreamFromReadable,
   writeReadableStreamToWritable,
 } from "@react-router/node";
+import { assertOutboundNetworkAllowed } from "../app/environment.server";
 import { createNodeDocumentsBinding } from "./documents-binding.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -35,6 +36,17 @@ if (process.env.GRAPH_JSON_API_KEY) {
 
 if (process.env.APIHERO_PROJECT_KEY) {
   globalThis.APIHERO_PROJECT_KEY = process.env.APIHERO_PROJECT_KEY;
+}
+
+if (process.env.JSONHERO_DISABLE_OUTBOUND_NETWORK === "1") {
+  globalThis.JSONHERO_DISABLE_OUTBOUND_NETWORK = "1";
+
+  const originalFetch = globalThis.fetch.bind(globalThis);
+
+  globalThis.fetch = (input, init) => {
+    assertOutboundNetworkAllowed(input);
+    return originalFetch(input, init);
+  };
 }
 
 const build = await import("../build/server/server/index.js");

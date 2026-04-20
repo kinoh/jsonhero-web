@@ -1,9 +1,14 @@
 import * as apiheroFetch from "@apihero/fetch";
-import { getApiheroProjectKey } from "~/environment.server";
+import {
+  assertOutboundNetworkAllowed,
+  getApiheroProjectKey,
+} from "~/environment.server";
 
 const createFetchProxy = apiheroFetch.createFetchProxy;
 
 export function fetchProxy(input: RequestInfo | URL, init?: RequestInit) {
+  assertOutboundNetworkAllowed(input);
+
   const projectKey = getApiheroProjectKey();
 
   if (!projectKey) {
