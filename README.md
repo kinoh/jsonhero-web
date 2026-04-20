@@ -10,6 +10,7 @@ The upstream project and brand belong to their original maintainers. This fork f
 
 - Migrated the app from Remix-era tooling to React Router v7 and Vite to keep the project buildable on current tooling.
 - Added a production-oriented Docker self-hosting path with a dedicated Node runtime and filesystem-backed document storage.
+- Added automatic GHCR image publishing on Git tag pushes so self-hosted releases can be pulled from the registry.
 - Added `JSONHERO_DISABLE_OUTBOUND_NETWORK=1` to hard-disable non-local outbound HTTP(S) requests for restricted deployments.
 - Added Playwright E2E coverage and browser provisioning so local and CI verification are reproducible on clean environments.
 - Fixed several self-hosting and UI regressions, including hydration mismatches, noisy 4xx server logs, and editor focus loss after view switching.
@@ -21,6 +22,7 @@ For design notes behind those changes, see:
 - [docs/20260419_e2e_safety_net.md](docs/20260419_e2e_safety_net.md)
 - [docs/20260419_e2e_browser_install.md](docs/20260419_e2e_browser_install.md)
 - [docs/20260420_outbound_network_guard.md](docs/20260420_outbound_network_guard.md)
+- [docs/20260420_ghcr_publish.md](docs/20260420_ghcr_publish.md)
 
 ## Quick start
 
@@ -45,6 +47,20 @@ JSONHERO_DISABLE_OUTBOUND_NETWORK=1
 ```
 
 Run `npm run build` or `npm run dev`, then start the app with `npm start` and open `http://localhost:8787`.
+
+## Container image releases
+
+Pushing a Git tag publishes the Docker image from [`Dockerfile`](Dockerfile) to `ghcr.io/kinoh/jsonhero-web-fork`.
+
+Examples:
+
+```bash
+git tag v1.2.3
+git push origin v1.2.3
+docker pull ghcr.io/kinoh/jsonhero-web-fork:v1.2.3
+```
+
+For semantic version tags, the workflow also publishes rolling tags such as `1.2` and `1`.
 
 # JSON Hero
 

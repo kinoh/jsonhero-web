@@ -38,3 +38,11 @@ Optionally set other secrets listed at the end of `wrangler.toml`.
 ```bash
 wrangler publish
 ```
+
+## Container image releases
+
+This fork also publishes a container image to GHCR when a Git tag is pushed.
+
+```bash
+docker pull ghcr.io/kinoh/jsonhero-web-fork:<tag>
+```
