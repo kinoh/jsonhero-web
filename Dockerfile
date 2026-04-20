@@ -30,7 +30,8 @@ COPY --from=builder /app/build ./build
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/server ./server
 COPY --from=builder /app/package.json ./package.json
-RUN npm install --omit=dev --no-save lodash@4.17.21
+RUN npm install --omit=dev --no-save lodash@4.17.21 \
+  && npm cache clean --force
 
 USER jsonhero
 
