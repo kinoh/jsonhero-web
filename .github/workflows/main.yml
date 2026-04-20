@@ -10,7 +10,7 @@ on:
       - "public/*"
       - "styles/*"
       - "worker/*"
-      - "tests/*"
+      - "tests/**"
       - "package.json"
       - "package-lock.json"
       - "remix.config.js"
