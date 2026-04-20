@@ -69,6 +69,11 @@ export function JsonRender({
     }
   }, [selectedLine]);
 
+  useEffect(() => {
+    if (!focusable || !containerRef.current) return;
+    containerRef.current.focus({ preventScroll: true });
+  }, [focusable]);
+
   const onKeyDown = useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       if (!focusable || !onSelectedLineChange) return;

@@ -140,6 +140,20 @@ test("creates a document from a remote JSON URL and navigates between views", as
   });
 });
 
+test("focuses the editor after using the Alt+2 shortcut", async ({ page, request }) => {
+  await openCreatedDocument(
+    page,
+    await createRawJsonDocument(request, { greeting: "hello" })
+  );
+
+  await page.keyboard.press("Alt+2");
+
+  await expect(page).toHaveURL(/\/editor$/);
+  await expect(
+    page.locator('div[role="textbox"][aria-readonly="true"]')
+  ).toBeFocused();
+});
+
 test.describe("when outbound network is disabled", () => {
   test.skip(
     !outboundNetworkDisabled,
